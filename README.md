@@ -1,34 +1,143 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Merry Post
 
-## Getting Started
+## Overview
 
-First, run the development server:
+companyForum! is a web forum application that enables you to create new topics and media links to share with your friends. It also allows you to communicate with friends in your group freely and discuss the things you love.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+### Problem
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Nowadays, there are many social media apps to choose from, but most of them can leave you feeling overwhelmed and detached, while also raising concerns about your privacy. In contrast, we believe that having a small, niche yet dynamic forum app in your hands can create a sense of ownership and belonging within your own community.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### User Profile
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Our main target users are groups of people who want to stay updated with the news and share them with their friends or colleagues. But due to the versatility of the forum application, any community or organization can apply this application to their own groups.
 
-## Learn More
+### Features
 
-To learn more about Next.js, take a look at the following resources:
+- User login authentication
+- Dynamic forum feed and comments
+- Ability for users to create new topic with attachments
+- Ability for users to create new comments
+- Profile setting
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Next.js (Fullstack)
+- Talwind CSS
+- Javascript
+- PostgreSQL
+- Prisma ORM
+- Moment.js
+- Google Fonts
+- React Icons
 
-## Deploy on Vercel
+## Implementation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Sitemap
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Login page
+- Register page
+
+- Feed (Homepage)
+- Topic page (post, comments, comment input box)
+- Create topic page
+- Edit topic page
+
+- User profile page (Setting)
+
+On tablet and desktop, user can see 2 pages at the time.
+
+### Endpoints
+
+**GET /users**
+Lists all users.
+
+**POST /users**
+Add new user.
+
+**GET /users/:id**
+Lists single user.
+
+**PUT /users/:id**
+Edits user.
+
+**DELETE /users/:id**
+Deletes user.
+
+**GET /users/:id/topics**
+Lists all user's topics.
+
+---
+
+**GET /topics**
+Lists all topics.
+
+**POST /topics**
+Add new topic.
+
+**GET /topics/:id**
+Lists single topic.
+
+**PUT /topics/:id**
+Edits topic.
+
+**DELETE /topics/:id**
+Deletes topic.
+
+**GET /topics/:id/comments**
+Lists all topic's comments.
+
+---
+
+**GET /comments**
+Lists all comments.
+
+**POST /comments**
+Add new comment.
+
+**GET /comments/:id**
+Lists single comment.
+
+**PUT /comments/:id**
+Edits comment.
+
+**DELETE /comments/:id**
+Deletes comment.
+
+### Auth
+
+- We will create our own JWT authentication for both cliend-side and server-side
+
+## Roadmap
+
+**Sprint 1**
+
+- Create front-end client
+- Set up database
+- Create back-end API
+- Create feed page
+- Create topic page
+
+**Sprint 2**
+
+- Create create topic page
+- Create edit topic page
+- Create comment section
+- Create user profile (setting) page
+
+**Sprint 3**
+
+- Create login page
+- Create register page
+- Create authentication
+
+## Nice-to-haves
+
+- Edit comment feature
+- Add user image feature
+- View count feature
+- Like feature, but using emoji instead
+- Search feature
+- Deploy to Vercel
+- TypeScript version
+- More options for theme and layout customizations
