@@ -1,4 +1,5 @@
 import "./globals.css";
+import Home from "./Home";
 
 export const metadata = {
   title: "Merry Post",
@@ -11,13 +12,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full">
-      <body className="h-full bg-neutral-800">
-        <main className=" flex h-full flex-col ">
-          <div>
-            <section>Home</section>
+    <html lang="en">
+      <body>
+        <main className="flex bg-neutral-800">
+          <Home />
+          <div className="h-screen w-full  flex-col">
+            <header className="sticky top-0 flex h-12 items-center border-b border-b-neutral-700 bg-neutral-900 px-4 py-2"></header>
+            <section className="mt-12">{children}</section>
           </div>
-          <div>{children}</div>
         </main>
       </body>
     </html>
