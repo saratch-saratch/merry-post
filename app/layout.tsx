@@ -3,7 +3,7 @@ import Home from "./Home";
 
 export const metadata = {
   title: "Merry Post",
-  description: "Saratch Tanapongwonglert",
+  description: "Created by Saratch Tanapongwonglert",
 };
 
 export default function RootLayout({
@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <main className="flex min-w-[32rem] gap-2">
+        <main className="flex min-w-[32rem]">
           <Home />
           {children}
         </main>
