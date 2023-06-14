@@ -1,42 +1,43 @@
-import {
-  RiUser3Fill,
-  RiSwordFill,
-  RiMenu4Fill,
-  RiChat3Line,
-} from "react-icons/ri";
+import { RiChat3Line } from "react-icons/ri";
+import moment from "moment";
+import Header from "./Header";
 import Link from "next/link";
 
 export default async function Home() {
+  const date = moment().fromNow();
+
   return (
-    <section className=" left-0 h-screen w-full overflow-scroll rounded-lg bg-neutral-800">
-      <header className="sticky top-0 flex h-12 items-center rounded-t-lg border border-b-0 border-neutral-800 bg-neutral-900 px-4 py-2">
-        <nav className="flex flex-1 items-center">
-          <Link href="" className="group flex gap-0">
-            <RiMenu4Fill className="h-6 w-6 -rotate-12 fill-amber-200 group-hover:fill-red-500" />
-            <RiUser3Fill className="h-6 w-6 -rotate-12 fill-amber-200 group-hover:fill-red-500" />
-          </Link>
-          <div className="flex w-full items-center justify-center gap-4">
-            <div className="flex items-center gap-4">
-              <h1 className="font-vt323 text-2xl">Merry Post</h1>
-              <RiSwordFill className="h-6 w-6 rotate-12" />
-            </div>
-          </div>
-        </nav>
-      </header>
+    <section className=" left-0 h-screen w-full min-w-[32rem] overflow-scroll rounded-lg bg-neutral-800">
+      <Header />
       <section className="flex flex-col gap-4 overflow-x-hidden overflow-y-scroll bg-neutral-800 p-4">
-        <div className=" flex flex-row gap-4">
-          <div className="w-3/4 rounded-lg bg-neutral-700 px-4 py-2">
-            <p className="">Welcome to Merry Post!</p>
+        <div className="flex flex-row gap-4">
+          <div className="w-3/4 rounded-lg bg-gradient-to-r from-neutral-700 via-neutral-800 to-neutral-800 px-4 py-2">
+            <p>Welcome to Merry Post!</p>
             <p>Click the button to create a new post</p>
           </div>
-          <button className="flex h-12 w-1/4 items-center justify-center gap-1 self-center rounded-3xl bg-red-500 p-2 text-amber-200 hover:outline hover:outline-white">
+          <button className="flex h-12 w-1/4 items-center justify-center gap-1 self-center rounded-3xl bg-red-600 font-semibold text-amber-200 hover:bg-red-500">
             New Post
-            <RiChat3Line className="h-6 w-6 rotate-12 pb-1" />
+            <RiChat3Line className="h-6 w-6 " />
           </button>
         </div>
-        <div className=" h-1 w-full bg-neutral-700" />
+        <div className=" h-1 w-full rounded-lg bg-gradient-to-r from-amber-200 via-neutral-700 to-neutral-800" />
+        {/* will be replaced with client component */}
         {[1, 2, 3, 4, 5, 6].map((e) => (
-          <div className="h-32 w-full rounded-lg bg-neutral-700" />
+          <Link href={"/posts"}>
+            <div className="flex h-32 w-full justify-between rounded-lg bg-neutral-700 from-neutral-500 px-4 py-2 hover:cursor-pointer hover:bg-gradient-to-br">
+              <div className="flex h-full flex-col justify-between">
+                <div>
+                  <h3 className="text-xl font-bold">Title</h3>
+                  <div className="flex">
+                    <p className="text-red-500">Username</p>
+                    <p>: description</p>
+                  </div>
+                </div>
+                <p className="text-xs">{date}</p>
+              </div>
+              <div className="h-24 w-24 self-center rounded-lg bg-neutral-500"></div>
+            </div>
+          </Link>
         ))}
         <div></div>
       </section>
