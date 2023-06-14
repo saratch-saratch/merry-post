@@ -25,7 +25,6 @@ model User {
   job         Job         @relation(fields: [jobId], references: [id])
   posts       Post[]
   comments    Comment[]
-
 }
 
 model Post {
