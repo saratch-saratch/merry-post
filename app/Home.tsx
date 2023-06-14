@@ -12,7 +12,7 @@ export default async function Home() {
       <section className="flex flex-col gap-4 overflow-x-hidden overflow-y-scroll bg-neutral-800 p-4">
         <div className="flex flex-row gap-4">
           <div className="w-3/4 rounded-md bg-gradient-to-r from-neutral-700 via-neutral-800 to-neutral-800 px-4 py-2">
-            <p>Welcome to Merry Post!</p>
+            <p>Welcome to Merry Post! {"(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧"}</p>
             <p>Click the button to create a new post</p>
           </div>
           <button className="flex h-12 w-1/4 items-center justify-center gap-1 self-center rounded-3xl bg-red-500 font-semibold text-amber-200 hover:bg-red-600">
