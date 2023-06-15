@@ -1,7 +1,7 @@
 import { RiChat3Line } from "react-icons/ri";
 import moment from "moment";
 import Header from "./Header";
-import Link from "next/link";
+import Posts from "./Posts";
 
 export default async function Home() {
   const date = moment().fromNow();
@@ -21,26 +21,7 @@ export default async function Home() {
           </button>
         </div>
         <div className=" h-1 w-full rounded-lg bg-gradient-to-r from-amber-200 via-neutral-700 to-neutral-800" />
-        <section className="flex flex-col gap-4">
-          {/* will be replaced with client component */}
-          {[1, 2, 3, 4, 5, 6].map((e) => (
-            <Link href={"/posts"}>
-              <div className="flex h-32 w-full justify-between rounded-md bg-neutral-700 from-neutral-500 px-4 py-2 hover:cursor-pointer hover:bg-gradient-to-br">
-                <div className="flex h-full flex-col justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold">Title</h3>
-                    <div className="flex">
-                      <p className="text-red-500">Username</p>
-                      <p>: description</p>
-                    </div>
-                  </div>
-                  <p className="text-xs">{date}</p>
-                </div>
-                <div className="h-24 w-24 self-center rounded-lg bg-neutral-500"></div>
-              </div>
-            </Link>
-          ))}
-        </section>
+        <Posts />
       </section>
     </section>
   );
