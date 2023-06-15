@@ -1,19 +1,22 @@
 export default async function fetcher(url: string) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error("An error occurred while fetching the data.");
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error("Failed to fetch data.");
   }
-  return response.json();
+  return res.json();
 }
 
-// import useSWR from "swr"
-// import fetcher from "@/utils/fetcher"
+// import useSWR from "swr";
+// import fetcher from "@/utils/fetcher";
 
-// function Profile () {
-//   const { data, error, isLoading } = useSWR("url", fetcher)
+// function getData() {
+//   const { data, error, isLoading } = useSWR(
+//     "http://localhost:3000/api/...",
+//     fetcher
+//   );
 
-//   if (error) return <div>component</div>
-//   if (isLoading) return <div>component</div>
+//   if (error) return "failed to load";
+//   if (isLoading) return "loading...";
 
-//   return <div>{data}</div>
+//   return data;
 // }

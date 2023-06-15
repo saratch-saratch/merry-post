@@ -3,7 +3,16 @@ import prisma from "@/prisma/prisma";
 
 export async function GET(request: Request) {
   try {
-    const posts = await prisma.post.findMany();
+    const posts = await prisma.post.findMany({
+      include: {
+        user: {
+          select: {
+            displayName: true,
+            job: true,
+          },
+        },
+      },
+    });
     return NextResponse.json(posts, { status: 200 });
   } catch (err) {
     return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
