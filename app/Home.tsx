@@ -1,7 +1,7 @@
 import { RiChat3Line } from "react-icons/ri";
 import moment from "moment";
 import Header from "./Header";
-import Posts from "./Posts";
+import Feed from "./Feed";
 
 export default async function Home() {
   const date = moment().fromNow();
@@ -21,7 +21,7 @@ export default async function Home() {
           </button>
         </div>
         <div className=" h-1 w-full rounded-lg bg-gradient-to-r from-amber-200 via-neutral-700 to-neutral-800" />
-        <Posts />
+        <Feed />
       </section>
     </section>
   );
