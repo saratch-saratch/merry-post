@@ -1,5 +1,4 @@
 import "./globals.css";
-import Home from "./(home)/Home";
 
 export const metadata = {
   title: "Merry Post",
@@ -13,12 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <main className="flex min-w-[32rem]">
-          <Home />
-          {children}
-        </main>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
