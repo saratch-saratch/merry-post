@@ -2,37 +2,100 @@
 
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import { useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
 import { Job } from "@prisma/client";
 
 export default function Login() {
-  const { data, error, isLoading } = useSWR(
-    "http://localhost:3000/api/jobs",
-    fetcher
-  );
+  const { data: jobs, error, isLoading } = useSWR<Job[]>("/api/jobs", fetcher);
 
   const router = useRouter();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [userError, setUserError] = useState({
+    username: false,
+    displayName: false,
+    jobId: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
+  const [userSubmit, setUserSubmit] = useState(false);
 
-  useEffect(() => {
-    if (data) {
-      setJobs(data);
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const newUser = {
+      username: event.currentTarget.username.value,
+      displayName: event.currentTarget.displayName.value,
+      email: event.currentTarget.email.value,
+      password: event.currentTarget.password.value,
+      confirmPassword: event.currentTarget.confirmPassword.value,
+      jobId: event.currentTarget.jobId.value,
+    };
+
+    //validation
+    const userErrorUpdates: { [key: string]: boolean } = {};
+    Object.entries(newUser).forEach(([key, value]) => {
+      if (value.length === 0) {
+        userErrorUpdates[key] = true;
+      } else {
+        userErrorUpdates[key] = false;
+      }
+    });
+
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(newUser.email)) {
+      userErrorUpdates.email = true;
+    } else userErrorUpdates.email = false;
+
+    if (
+      newUser.password !== newUser.confirmPassword ||
+      newUser.password === ""
+    ) {
+      userErrorUpdates.password = true;
+      userErrorUpdates.confirmPassword = true;
+    } else {
+      userErrorUpdates.password = false;
+      userErrorUpdates.confirmPassword = false;
     }
-  }, [data]);
+
+    //still need to check if username is taken
+
+    setUserError((prevUserError) => ({
+      ...prevUserError,
+      ...userErrorUpdates,
+    }));
+    if (Object.values(userErrorUpdates).some((value) => value === true)) {
+      return;
+    }
+
+    //send POST request to create new user
+    try {
+      const response = await fetch("http://localhost:3000/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: newUser.username,
+          displayName: newUser.displayName,
+          email: newUser.email,
+          password: newUser.password,
+          jobId: newUser.jobId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log(errorData);
+      } else {
+        setUserSubmit(true);
+        setTimeout(() => router.push("/login"), 2000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (error) return <div>{"(┛◉Д◉)┛彡┻━┻"}</div>;
   if (isLoading) return <div>{"♪☆＼(^０^＼) ♪(／^-^)／☆♪"}</div>;
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    //sign up completed!
-    //go back to login page
-    router.push("/login");
-  };
-
   return (
     <section className="relative h-full p-4 text-neutral-900">
       <form
@@ -45,21 +108,19 @@ export default function Login() {
             <input
               type="text"
               placeholder="Username"
+              name="username"
               className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
             />
-            <p style={{ display: "none" }} className="flex-grow text-rose-600">
-              X
-            </p>
+            {userError.username && <p className="flex-grow text-rose-600">X</p>}
           </div>
           <div className="flex w-60 items-center gap-2">
             <input
-              type="email"
+              type="text"
               placeholder="Email"
+              name="email"
               className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
             />
-            <p style={{ display: "none" }} className="flex-grow text-rose-600">
-              X
-            </p>
+            {userError.email && <p className="flex-grow text-rose-600">X</p>}
           </div>
         </div>
 
@@ -69,24 +130,26 @@ export default function Login() {
             <input
               type="text"
               placeholder="Display name"
+              name="displayName"
               className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
             />
-            <p style={{ display: "none" }} className="flex-grow text-rose-600">
-              X
-            </p>
+            {userError.displayName && (
+              <p className="flex-grow text-rose-600">X</p>
+            )}
           </div>
           <div className="flex w-60 items-center gap-2">
-            <select className="h-6 w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none">
+            <select
+              name="jobId"
+              className="h-6 w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
+            >
               <option value="">Choose your job</option>
-              {jobs.map((job) => (
+              {jobs?.map((job) => (
                 <option key={job.id} value={job.id}>
                   {job.jobName}
                 </option>
               ))}
             </select>
-            <p style={{ display: "none" }} className="flex-grow text-rose-600">
-              X
-            </p>
+            {userError.jobId && <p className="flex-grow text-rose-600">X</p>}
           </div>
         </div>
 
@@ -96,21 +159,21 @@ export default function Login() {
             <input
               type="password"
               placeholder="Password"
+              name="password"
               className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
             />
-            <p style={{ display: "" }} className="flex-grow text-rose-600">
-              X
-            </p>
+            {userError.password && <p className="flex-grow text-rose-600">X</p>}
           </div>
           <div className="flex w-60 items-center gap-2">
             <input
               type="password"
               placeholder="Confirm password"
+              name="confirmPassword"
               className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
             />
-            <p style={{ display: "" }} className="flex-grow text-rose-600">
-              X
-            </p>
+            {userError.confirmPassword && (
+              <p className="flex-grow text-rose-600">X</p>
+            )}
           </div>
         </div>
 
@@ -120,12 +183,11 @@ export default function Login() {
         </button>
 
         {/* completion message */}
-        <p
-          style={{ display: "" }}
-          className="absolute bottom-4 right-4 text-teal-300"
-        >
-          {"(｢• ω •)｢ Done!"}
-        </p>
+        {userSubmit && (
+          <p className="absolute bottom-4 right-4 text-teal-300">
+            {"(｢• ω •)｢ Done!"}
+          </p>
+        )}
       </form>
       <Link
         href="/login"

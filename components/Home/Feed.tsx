@@ -7,23 +7,15 @@ import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import getYoutubeMetadata from "@/utils/getYoutubeMetadata";
 import { FetchedPost } from "@/interfaces/fetchedPost";
+import { Post } from "@prisma/client";
 
 export default function Feed() {
-  const { data, error, isLoading } = useSWR("/api/posts", fetcher);
-
+  const { data: posts, error, isLoading } = useSWR("/api/posts", fetcher);
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
-  const [posts, setPosts] = useState<FetchedPost[]>([]);
 
   useEffect(() => {
-    if (data) {
-      setPosts(data);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (posts.length > 0) {
-      const urls = posts.map((post) => post.link);
-
+    if (posts) {
+      const urls = posts.map((post: FetchedPost) => post.link);
       const fetchThumbnails = async () => {
         const result = await getYoutubeMetadata(urls);
         setThumbnails(result);
