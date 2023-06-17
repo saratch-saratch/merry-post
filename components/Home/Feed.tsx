@@ -6,7 +6,7 @@ import moment from "moment";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import getYoutubeMetadata from "@/utils/getYoutubeMetadata";
-import { Post } from "@/interfaces/post";
+import { FetchedPost } from "@/interfaces/fetchedPost";
 
 export default function Feed() {
   const { data, error, isLoading } = useSWR(
@@ -15,7 +15,7 @@ export default function Feed() {
   );
 
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<FetchedPost[]>([]);
 
   useEffect(() => {
     if (data) {
@@ -36,11 +36,11 @@ export default function Feed() {
   }, [posts]);
 
   if (error) return <div>{"(┛◉Д◉)┛彡┻━┻"}</div>;
-  if (isLoading) return <div>{"(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧"}</div>;
+  if (isLoading) return <div>{"♪☆＼(^０^＼) ♪(／^-^)／☆♪"}</div>;
 
   return (
     <section className="flex flex-col gap-4">
-      {posts.map((post: Post) => (
+      {posts.map((post: FetchedPost) => (
         <Link href={"/posts/" + post.id} key={post.id}>
           <div className="flex w-full flex-col justify-between gap-2 rounded-md bg-neutral-700 from-neutral-500 px-4 py-2 hover:cursor-pointer hover:bg-gradient-to-br">
             <div className="flex flex-col gap-2">

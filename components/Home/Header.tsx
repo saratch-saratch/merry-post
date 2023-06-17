@@ -1,9 +1,4 @@
-import {
-  RiUser3Fill,
-  RiRestartFill,
-  RiSwordFill,
-  RiMenu4Fill,
-} from "react-icons/ri";
+import { RiUser3Fill, RiSwordFill, RiMenu4Fill } from "react-icons/ri";
 import Link from "next/link";
 import ReloadButton from "./ReloadButton";
 
