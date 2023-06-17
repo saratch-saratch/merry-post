@@ -2,6 +2,7 @@ import { RiChat3Line } from "react-icons/ri";
 import moment from "moment";
 import Header from "./Header";
 import Feed from "./Feed";
+import Link from "next/link";
 
 export default async function Home() {
   const date = moment().fromNow();
@@ -15,10 +16,12 @@ export default async function Home() {
             <p>Welcome to Merry Post! {"(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧"}</p>
             <p>Click the button to create a new post</p>
           </div>
-          <button className="flex h-12 w-1/4 items-center justify-center gap-1 self-center rounded-3xl bg-red-500 font-semibold text-amber-200 hover:bg-red-600">
-            New Post
-            <RiChat3Line className="h-6 w-6 " />
-          </button>
+          <Link href="/" className="w-1/4 self-center">
+            <button className="flex h-12 w-full items-center justify-center gap-1 rounded-3xl bg-rose-600 font-semibold text-amber-200 hover:bg-rose-500 hover:text-black">
+              New Post
+              <RiChat3Line className="h-6 w-6" />
+            </button>
+          </Link>
         </div>
         <div className=" h-1 w-full rounded-lg bg-gradient-to-r from-amber-200 via-neutral-700 to-neutral-800" />
         <Feed />

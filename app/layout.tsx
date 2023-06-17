@@ -1,5 +1,5 @@
 import "./globals.css";
-import Home from "./Home";
+import Home from "./(home)/Home";
 
 export const metadata = {
   title: "Merry Post",
