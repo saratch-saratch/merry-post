@@ -8,12 +8,25 @@ export async function GET(request: Request) {
         user: {
           select: {
             displayName: true,
-            job: true,
+            job: { select: { color: true } },
           },
         },
       },
     });
-    return NextResponse.json(posts, { status: 200 });
+
+    const filteredPost = posts.map((post) => {
+      return {
+        id: post.id,
+        title: post.title,
+        description: post.description,
+        link: post.link || "",
+        createdAt: post.createdAt,
+        user: post.user.displayName,
+        color: post.user.job.color,
+      };
+    });
+
+    return NextResponse.json(filteredPost, { status: 200 });
   } catch (err) {
     return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }

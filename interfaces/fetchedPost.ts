@@ -1,13 +1,9 @@
 export interface FetchedPost {
   id: string;
   title: string;
-  link?: string;
   description: string;
+  link: string;
   createdAt: string;
-  user: {
-    job: {
-      color: string;
-    };
-    displayName: string;
-  };
+  user: string;
+  color: string;
 }
