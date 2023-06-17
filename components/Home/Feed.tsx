@@ -9,10 +9,7 @@ import getYoutubeMetadata from "@/utils/getYoutubeMetadata";
 import { FetchedPost } from "@/interfaces/fetchedPost";
 
 export default function Feed() {
-  const { data, error, isLoading } = useSWR(
-    "http://localhost:3000/api/posts",
-    fetcher
-  );
+  const { data, error, isLoading } = useSWR("/api/posts", fetcher);
 
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const [posts, setPosts] = useState<FetchedPost[]>([]);
@@ -24,8 +21,8 @@ export default function Feed() {
   }, [data]);
 
   useEffect(() => {
-    if (posts) {
-      const urls = posts.map((post) => post.link || "");
+    if (posts.length > 0) {
+      const urls = posts.map((post) => post.link);
 
       const fetchThumbnails = async () => {
         const result = await getYoutubeMetadata(urls);
@@ -55,9 +52,7 @@ export default function Feed() {
                 )}
               </div>
               <div className="flex">
-                <p style={{ color: post.user.job.color }}>
-                  {post.user.displayName}
-                </p>
+                <p style={{ color: post.color }}>{post.user}</p>
                 <p className="truncate">: {post.description}</p>
               </div>
             </div>
