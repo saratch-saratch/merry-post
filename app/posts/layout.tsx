@@ -1,18 +1,19 @@
-import "./globals.css";
+import Home from "@/components/Home/Home";
 
 export const metadata = {
   title: "Merry Post",
   description: "Created by Saratch Tanapongwonglert",
 };
 
-export default function RootLayout({
+export default function PostsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
+    <main className="flex">
+      <Home />
+      {children}
+    </main>
   );
 }

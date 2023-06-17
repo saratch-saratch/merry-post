@@ -23,7 +23,7 @@ export default async function Header() {
             Post title blah blah blah blah blah blah
           </h3>
         </div>
-        <Link href="/">
+        <Link href="/posts">
           <RiCloseCircleFill className="h-6 w-6 rotate-12 fill-amber-200 hover:fill-rose-600" />
         </Link>
       </header>

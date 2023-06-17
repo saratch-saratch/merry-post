@@ -1,4 +1,4 @@
-export interface Post {
+export interface FetchedPost {
   id: string;
   title: string;
   link?: string;

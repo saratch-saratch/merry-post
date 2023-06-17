@@ -1,3 +1,8 @@
+import { redirect } from "next/navigation";
+
 export default function Index() {
-  return <section className="invisible"></section>;
+  // redirect("/login");
+
+  //if have token then:
+  redirect("/posts");
 }
