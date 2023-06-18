@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       },
     });
 
-    const filteredPost = posts.map((post) => {
+    const filteredPosts = posts.map((post) => {
       return {
         id: post.id,
         title: post.title,
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
       };
     });
 
-    return NextResponse.json(filteredPost, { status: 200 });
+    return NextResponse.json(filteredPosts, { status: 200 });
   } catch (err) {
     return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
