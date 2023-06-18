@@ -7,11 +7,11 @@ import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import getYoutubeMetadata from "@/utils/getYoutubeMetadata";
 import { FetchedPost } from "@/interfaces/fetchedPost";
-import { Post } from "@prisma/client";
 
 export default function Feed() {
   const { data: posts, error, isLoading } = useSWR("/api/posts", fetcher);
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
+  const [sortedPosts, setSortedPosts] = useState<FetchedPost[]>([]);
 
   useEffect(() => {
     if (posts) {
@@ -21,6 +21,12 @@ export default function Feed() {
         setThumbnails(result);
       };
       fetchThumbnails();
+
+      const sorted = [...posts].sort((a, b) => {
+        const result = Date.parse(b.createdAt) - Date.parse(a.createdAt);
+        return result;
+      });
+      setSortedPosts(sorted);
     }
   }, [posts]);
 
@@ -29,7 +35,7 @@ export default function Feed() {
 
   return (
     <section className="flex flex-col gap-4">
-      {posts.map((post: FetchedPost) => (
+      {sortedPosts.map((post: FetchedPost) => (
         <Link href={"/posts/" + post.id} key={post.id}>
           <div className="flex w-full flex-col justify-between gap-2 rounded-md bg-neutral-700 from-neutral-500 px-4 py-2 hover:cursor-pointer hover:bg-gradient-to-br">
             <div className="flex flex-col gap-2">
@@ -38,7 +44,7 @@ export default function Feed() {
                 {post.link && thumbnails[post.link] !== "" && (
                   <img
                     src={thumbnails[post.link]}
-                    className="aspect-video h-20 flex-shrink-0 self-center rounded-lg object-cover"
+                    className="aspect-video h-20 flex-shrink-0 self-center rounded-md object-cover"
                     alt="Thumbnail"
                   ></img>
                 )}
