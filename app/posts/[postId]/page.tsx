@@ -7,17 +7,14 @@ import {
 import Link from "next/link";
 import moment from "moment";
 import PostDeleteButton from "./PostDeleteButton";
-import Image from "next/image";
+import Comments from "./Comments";
 
 export const metadata = {
   title: "Post Title",
 };
 
 async function getPost(postId: string) {
-  const res = await fetch(
-    process.env.NEXT_PUBLIC_API_URL + "/posts/" + postId,
-    { cache: "no-store" }
-  );
+  const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/posts/" + postId);
   return res.json();
 }
 
@@ -28,42 +25,38 @@ export default async function Post({ params }: { params: { postId: string } }) {
 
   return (
     <section className="ml-2 h-screen w-full min-w-[32rem] overflow-scroll rounded-lg bg-neutral-800">
-      <header className="sticky top-0 flex h-12 items-center justify-between rounded-t-lg bg-neutral-900 px-4 py-2">
-        <div className="flex gap-2">
-          <RiChat3Line className="h-6 w-6 -rotate-90" />
-          <h3 className="truncate font-vt323 text-lg font-bold"></h3>
-        </div>
+      <header className="sticky top-0 flex h-12 w-full items-center justify-between gap-2 rounded-t-lg bg-neutral-900 px-4 py-2">
+        <RiChat3Line className="h-6 w-6 shrink-0 -rotate-90" />
+        <h3 className="truncate font-vt323 text-lg font-bold">{post.title}</h3>
         <Link href="/posts">
           <RiCloseCircleFill className="h-6 w-6 rotate-12 fill-amber-200 hover:fill-rose-600" />
         </Link>
       </header>
-      <section className="flex flex-col gap-4 overflow-x-hidden overflow-y-scroll p-4">
+      <section className="flex h-full flex-col gap-4 overflow-x-hidden overflow-y-scroll p-4">
         <section className="group flex w-full gap-2 rounded-md bg-gradient-to-bl from-neutral-700 via-neutral-800 to-neutral-800 px-4 py-2 hover:via-neutral-700 hover:to-neutral-700">
           <div className="flex w-full flex-col gap-4">
             <h2 className="text-3xl">{post.title}</h2>
             <div className="flex w-full gap-4">
               <div
                 style={{ backgroundColor: post.color }}
-                className="h-10 w-10 flex-shrink-0 rounded-full"
+                className="h-8 w-8 flex-shrink-0 rounded-full"
               ></div>
-              <div className="flex flex-col justify-between gap-4">
-                <div>
-                  <p style={{ color: post.color }} className="font-bold">
-                    {post.user}
-                  </p>
-                  <p>{post.description}</p>
-                </div>
+              <div className="flex w-full flex-col justify-between gap-4">
+                <p style={{ color: post.color }} className="font-bold">
+                  {post.user}
+                </p>
+                <p>{post.description}</p>
                 {post.link.length > 0 && (
-                  <Link href={post.link}>
-                    <div className="flex flex-col gap-2 rounded-md bg-neutral-900 p-2">
-                      <p className="text-sm">Youtube</p>
+                  <Link href={post.link} className="w-3/4">
+                    <div className="flex flex-col gap-1 rounded-md bg-neutral-900 p-2">
+                      <p className="text-xs">Youtube</p>
                       <h3 className="text-rose-600">Title</h3>
-                      <p className="text-sm">description</p>
-                      <Image
-                        src=""
+                      <p className="text-xs">description</p>
+                      <img
+                        src="https://i.ytimg.com/vi/yP3vIGEUcOQ/hqdefault.jpg"
                         alt=""
-                        className="aspect-video h-full w-full rounded-md bg-slate-100"
-                      ></Image>
+                        className="aspect-video h-full w-full rounded-md bg-slate-100 object-cover"
+                      ></img>
                     </div>
                   </Link>
                 )}
@@ -86,28 +79,7 @@ export default async function Post({ params }: { params: { postId: string } }) {
           </div>
         </section>
         <div className=" h-1 w-full rounded-lg bg-gradient-to-r from-neutral-800 via-neutral-700 to-amber-200" />
-        <section className="flex flex-col gap-4">
-          {/* will be replaced with client component */}
-          {[1, 2, 3, 4, 5, 6].map((e) => (
-            <div className="group flex w-full gap-2 rounded-md px-4 py-2 hover:bg-neutral-700">
-              <div className="flex w-full gap-4">
-                <div className="h-12 w-12 flex-shrink-0 rounded-full bg-teal-500"></div>
-                <div className="flex flex-col justify-between gap-2">
-                  <div>
-                    <p className="font-bold text-rose-600">Username</p>
-                    <p>description</p>
-                  </div>
-                  <p className="text-xs">{date}</p>
-                </div>
-              </div>
-              <div className="invisible flex flex-col gap-1 group-hover:visible">
-                <Link href="">
-                  <RiDeleteBinFill className="h-6 w-6 fill-rose-600 hover:fill-red-600" />
-                </Link>
-              </div>
-            </div>
-          ))}
-        </section>
+        <Comments />
       </section>
       <form
         // onSubmit={(e) => e.preventDefault()}
