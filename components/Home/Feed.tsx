@@ -38,7 +38,7 @@ export default function Feed() {
                 {post.link && thumbnails[post.link] !== "" && (
                   <img
                     src={thumbnails[post.link]}
-                    className="aspect-video h-20 flex-shrink-0 self-center rounded-lg object-cover"
+                    className="aspect-video h-20 flex-shrink-0 self-center rounded-md object-cover"
                     alt="Thumbnail"
                   ></img>
                 )}

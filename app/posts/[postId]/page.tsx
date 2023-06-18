@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import moment from "moment";
 import PostDeleteButton from "./PostDeleteButton";
+import Image from "next/image";
 
 export const metadata = {
   title: "Post Title",
@@ -37,7 +38,7 @@ export default async function Post({ params }: { params: { postId: string } }) {
         </Link>
       </header>
       <section className="flex flex-col gap-4 overflow-x-hidden overflow-y-scroll p-4">
-        <section className="group flex w-full gap-2 rounded-sm bg-gradient-to-bl from-neutral-700 via-neutral-800 to-neutral-800 px-4 py-2 hover:via-neutral-700 hover:to-neutral-700">
+        <section className="group flex w-full gap-2 rounded-md bg-gradient-to-bl from-neutral-700 via-neutral-800 to-neutral-800 px-4 py-2 hover:via-neutral-700 hover:to-neutral-700">
           <div className="flex w-full flex-col gap-4">
             <h2 className="text-3xl">{post.title}</h2>
             <div className="flex w-full gap-4">
@@ -45,13 +46,27 @@ export default async function Post({ params }: { params: { postId: string } }) {
                 style={{ backgroundColor: post.color }}
                 className="h-10 w-10 flex-shrink-0 rounded-full"
               ></div>
-              <div className="flex flex-col justify-between gap-2">
+              <div className="flex flex-col justify-between gap-4">
                 <div>
                   <p style={{ color: post.color }} className="font-bold">
                     {post.user}
                   </p>
                   <p>{post.description}</p>
                 </div>
+                {post.link.length > 0 && (
+                  <Link href={post.link}>
+                    <div className="flex flex-col gap-2 rounded-md bg-neutral-900 p-2">
+                      <p className="text-sm">Youtube</p>
+                      <h3 className="text-rose-600">Title</h3>
+                      <p className="text-sm">description</p>
+                      <Image
+                        src=""
+                        alt=""
+                        className="aspect-video h-full w-full rounded-md bg-slate-100"
+                      ></Image>
+                    </div>
+                  </Link>
+                )}
                 <div>
                   <p className="text-end text-xs">{date}</p>
                   {post.lastModified && (
@@ -74,7 +89,7 @@ export default async function Post({ params }: { params: { postId: string } }) {
         <section className="flex flex-col gap-4">
           {/* will be replaced with client component */}
           {[1, 2, 3, 4, 5, 6].map((e) => (
-            <div className="group flex w-full gap-2 rounded-sm px-4 py-2 hover:bg-neutral-700">
+            <div className="group flex w-full gap-2 rounded-md px-4 py-2 hover:bg-neutral-700">
               <div className="flex w-full gap-4">
                 <div className="h-12 w-12 flex-shrink-0 rounded-full bg-teal-500"></div>
                 <div className="flex flex-col justify-between gap-2">
@@ -94,7 +109,17 @@ export default async function Post({ params }: { params: { postId: string } }) {
           ))}
         </section>
       </section>
-      <form className="sticky bottom-0 flex h-12 rounded-b-lg  bg-neutral-900 px-4 py-2"></form>
+      <form
+        // onSubmit={(e) => e.preventDefault()}
+        className="sticky bottom-0 flex h-12 rounded-b-lg  bg-neutral-900 px-4 py-2"
+      >
+        <input
+          type="text"
+          name="message"
+          placeholder="Send a message in this post"
+          className="w-full rounded-md bg-neutral-800 px-4 outline-none"
+        ></input>
+      </form>
     </section>
   );
 }
