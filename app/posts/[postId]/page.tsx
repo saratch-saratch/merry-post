@@ -4,10 +4,6 @@ import Comments from "./Comments";
 import MessageBar from "./MessageBar";
 import Post from "./Post";
 
-export const metadata = {
-  title: "Post Title",
-};
-
 async function getPost(postId: string) {
   const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/posts/" + postId);
   return res.json();
@@ -21,10 +17,14 @@ export default async function PostPage({
   const post = await getPost(params.postId);
 
   return (
-    <main className="ml-2 flex h-screen w-full min-w-[32rem] flex-col overflow-auto rounded-lg bg-neutral-800">
+    <main className="ml-2 flex h-screen w-full min-w-[32rem] flex-col rounded-lg bg-neutral-800">
       <header className="sticky top-0 flex h-12 w-full items-center justify-between gap-2 rounded-t-lg bg-neutral-900 px-4 py-2">
-        <RiChat3Line className="h-6 w-6 shrink-0 -rotate-90" />
-        <h3 className="truncate font-vt323 text-lg font-bold">{post.title}</h3>
+        <div className="flex gap-4 overflow-hidden">
+          <RiChat3Line className="h-6 w-6 shrink-0 -rotate-90" />
+          <h3 className="truncate font-vt323 text-lg font-bold">
+            {post.title}
+          </h3>
+        </div>
         <Link href="/posts">
           <RiCloseCircleFill className="h-6 w-6 rotate-12 fill-amber-200 hover:fill-rose-600" />
         </Link>
