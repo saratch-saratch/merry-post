@@ -1,4 +1,4 @@
-export default async function getYoutubeMetadata(urls: string[]) {
+export default async function getYoutubeThumbnails(urls: string[]) {
   const thumbnailUrls: Record<string, string> = {};
   for (const url of urls) {
     try {
