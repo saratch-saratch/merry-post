@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Job } from "@prisma/client";
 
 export default function Login() {
-  const { data: jobs, error, isLoading } = useSWR<Job[]>("/api/jobs", fetcher);
+  const { data: jobs, error, isLoading } = useSWR("/api/jobs", fetcher);
 
   const router = useRouter();
   const [userError, setUserError] = useState({
@@ -143,7 +143,7 @@ export default function Login() {
               className="h-6 w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
             >
               <option value="">Choose your job</option>
-              {jobs?.map((job) => (
+              {jobs?.map((job: { id: number; jobName: string }) => (
                 <option key={job.id} value={job.id}>
                   {job.jobName}
                 </option>

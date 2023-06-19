@@ -5,19 +5,28 @@ import Link from "next/link";
 import moment from "moment";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import getYoutubeMetadata from "@/utils/getYoutubeMetadata";
 import { FetchedPost } from "@/interfaces/fetchedPost";
+import getYoutubeThumbnails from "@/utils/getYoutubeThumbnails";
+
+let mutate: () => Promise<any>;
 
 export default function Feed() {
-  const { data: posts, error, isLoading } = useSWR("/api/posts", fetcher);
+  const {
+    data: posts,
+    isLoading,
+    error,
+    mutate: mutatePosts,
+  } = useSWR("/api/posts", fetcher);
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const [sortedPosts, setSortedPosts] = useState<FetchedPost[]>([]);
+
+  mutate = mutatePosts;
 
   useEffect(() => {
     if (posts) {
       const urls = posts.map((post: FetchedPost) => post.link);
       const fetchThumbnails = async () => {
-        const result = await getYoutubeMetadata(urls);
+        const result = await getYoutubeThumbnails(urls);
         setThumbnails(result);
       };
       fetchThumbnails();
@@ -63,3 +72,5 @@ export default function Feed() {
     </section>
   );
 }
+
+export { mutate };
