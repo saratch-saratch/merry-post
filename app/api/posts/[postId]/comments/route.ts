@@ -35,3 +35,23 @@ export async function GET(
     return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
 }
+
+export async function POST(
+  request: Request,
+  { params }: { params: { postId: string } }
+) {
+  const body = await request.json();
+  try {
+    const comment = await prisma.comment.create({
+      data: {
+        message: body.message,
+        post: { connect: { id: params.postId } },
+        //using token to get user id
+        user: { connect: { id: "1" } },
+      },
+    });
+    return NextResponse.json(comment, { status: 201 });
+  } catch (err) {
+    return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
+  }
+}
