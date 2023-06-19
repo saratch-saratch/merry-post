@@ -1,14 +1,11 @@
 import { RiChat3Line } from "react-icons/ri";
-import moment from "moment";
 import Header from "./Header";
 import Feed from "./Feed";
 import Link from "next/link";
 
 export default async function Home() {
-  const date = moment().fromNow();
-
   return (
-    <section className="h-screen w-full min-w-[32rem] overflow-scroll rounded-lg bg-neutral-800">
+    <section className="flex h-screen w-full min-w-[32rem] flex-col overflow-scroll rounded-lg bg-neutral-800">
       <Header />
       <section className="flex flex-col gap-4 overflow-x-hidden overflow-y-scroll bg-neutral-800 p-4">
         <div className="flex flex-row gap-4">

@@ -21,7 +21,7 @@ export default async function PostPage({
   const post = await getPost(params.postId);
 
   return (
-    <section className="ml-2 h-screen w-full min-w-[32rem] overflow-scroll rounded-lg bg-neutral-800">
+    <main className="ml-2 flex h-screen w-full min-w-[32rem] flex-col overflow-auto rounded-lg bg-neutral-800">
       <header className="sticky top-0 flex h-12 w-full items-center justify-between gap-2 rounded-t-lg bg-neutral-900 px-4 py-2">
         <RiChat3Line className="h-6 w-6 shrink-0 -rotate-90" />
         <h3 className="truncate font-vt323 text-lg font-bold">{post.title}</h3>
@@ -35,6 +35,6 @@ export default async function PostPage({
         <Comments postId={params.postId} />
       </section>
       <MessageBar postId={params.postId} />
-    </section>
+    </main>
   );
 }
