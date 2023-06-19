@@ -1,20 +1,22 @@
 "use client";
 
 import { RiDeleteBinFill } from "react-icons/ri";
-import { useParams, useRouter } from "next/navigation";
 import moment from "moment";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { FetchedComment } from "@/interfaces/fetchedComment";
 
-export default function Comments() {
-  const { postId } = useParams();
-  const router = useRouter();
+let mutate: () => Promise<any>;
+
+export default function Comments({ postId }: { postId: string }) {
   const {
     data: comments,
     error,
     isLoading,
+    mutate: mutateComments,
   } = useSWR("/api/posts/" + postId + "/comments", fetcher);
+
+  mutate = mutateComments;
 
   const deletePost = async (commentId: string) => {
     // try {
@@ -25,7 +27,7 @@ export default function Comments() {
     //   if (!response.ok) {
     //     throw new Error(`Error: ${response.status}`);
     //   }
-    //   router.refresh();
+    //   mutate();
     // } catch (error) {
     //   console.error("An error occurred while deleting the comment:", error);
     // }
@@ -67,3 +69,5 @@ export default function Comments() {
     </section>
   );
 }
+
+export { mutate };
