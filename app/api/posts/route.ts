@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
 
 export async function GET(request: Request) {
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
         id: post.id,
         title: post.title,
         description: post.description,
-        link: post.link || "",
+        link: post.link,
         createdAt: post.createdAt,
         user: post.user.displayName,
         color: post.user.job.color,
@@ -32,14 +32,45 @@ export async function GET(request: Request) {
   }
 }
 
-// export async function POST(request: Request) {
-//   try {
-//     const res = await request.json();
-//     const post = { data: { title: res.title } };
-//     const newPost = await prisma.post.create(post);
-//     console.log(newPost);
-//     return NextResponse.json(newPost, { status: 200 });
-//   } catch (err) {
-//     return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
-//   }
-// }
+export async function POST(request: Request) {
+  const body = await request.json();
+  const { title, description, link } = body;
+  let checkedLink: string;
+  try {
+    if (!title || !description) {
+      return NextResponse.json(
+        { error: "Title and description are required" },
+        { status: 400 }
+      );
+    }
+
+    if (!link) {
+      checkedLink = "";
+    } else {
+      const url = new URL(link);
+      if (!url.hostname.includes(".")) {
+        return NextResponse.json(
+          { error: "Link is not a valid url" },
+          { status: 400 }
+        );
+      }
+      checkedLink = link;
+    }
+
+    const post = await prisma.post.create({
+      data: {
+        title,
+        description,
+        link: checkedLink,
+        //use token to get user id
+        user: { connect: { id: "1" } },
+      },
+    });
+    return NextResponse.json(post, { status: 201 });
+  } catch (err) {
+    return NextResponse.json(
+      { error: "Failed to create post" },
+      { status: 500 }
+    );
+  }
+}

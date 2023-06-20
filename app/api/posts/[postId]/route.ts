@@ -23,12 +23,57 @@ export async function GET(
 
     const filteredPost = {
       ...post,
-      link: post?.link || "",
       user: post?.user.displayName,
       color: post?.user.job.color,
     };
 
     return NextResponse.json(filteredPost, { status: 200 });
+  } catch (err) {
+    return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
+  }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: { postId: string } }
+) {
+  const body = await request.json();
+  const { title, description, link } = body;
+  let checkedLink: string;
+  try {
+    if (!title || !description) {
+      return NextResponse.json(
+        { error: "Title and description are required" },
+        { status: 400 }
+      );
+    }
+
+    if (!link) {
+      checkedLink = "";
+    } else {
+      const url = new URL(link);
+      if (!url.hostname.includes("youtube.com")) {
+        return NextResponse.json(
+          { error: "Link is not a valid url" },
+          { status: 400 }
+        );
+      }
+      checkedLink = link;
+    }
+
+    const post = await prisma.post.update({
+      where: {
+        id: params.postId,
+      },
+      data: {
+        title,
+        description,
+        link: checkedLink,
+        lastModified: new Date(),
+      },
+    });
+
+    return NextResponse.json(post, { status: 200 });
   } catch (err) {
     return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
