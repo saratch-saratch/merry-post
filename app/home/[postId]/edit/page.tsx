@@ -2,18 +2,44 @@
 
 import { RiCloseCircleFill, RiChat3Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
-import { useState, FormEvent } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { mutate } from "@/components/Home/Feed";
+import useSWR from "swr";
+import fetcher from "@/utils/fetcher";
 
-export default function CreatePage() {
+export default function EditPage({ params }: { params: { postId: string } }) {
+  const { postId } = params;
+  const {
+    data: post,
+    error,
+    isLoading,
+  } = useSWR("/api/posts/" + postId, fetcher);
+
   const router = useRouter();
-  const [post, setPost] = useState({ title: "", description: "", link: "" });
-  const [error, setError] = useState({ title: false, description: false });
+  const [editedPost, setEditedPost] = useState({
+    title: "",
+    description: "",
+    link: "",
+  });
+  const [postError, setPostError] = useState({
+    title: false,
+    description: false,
+  });
+
+  useEffect(() => {
+    if (post) {
+      setEditedPost({
+        title: post.title,
+        description: post.description,
+        link: post.link,
+      });
+    }
+  }, [post]);
 
   const handleCreate = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     let newPost = { ...post };
-    let newError = { ...error };
+    let newError = { ...postError };
 
     const validateNewPost = (newPost: {
       title: string;
@@ -34,7 +60,7 @@ export default function CreatePage() {
 
       if (newPost.link !== "") {
         try {
-          const url = new URL(newPost.link);
+          const url = new URL(post.link);
           if (url.hostname !== "www.youtube.com") {
             newPost.link = "";
           }
@@ -45,12 +71,12 @@ export default function CreatePage() {
     };
 
     validateNewPost(newPost);
-    setError(newError);
-    setPost(newPost);
+    setPostError(newError);
+    setEditedPost(newPost);
     if (!newError.title && !newError.description) {
       try {
-        const response = await fetch("/api/posts", {
-          method: "POST",
+        const response = await fetch("/api/posts/" + postId, {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
@@ -61,7 +87,7 @@ export default function CreatePage() {
           console.log(errorData);
         } else {
           mutate();
-          router.push("/home");
+          router.push("/home" + postId);
         }
       } catch (error) {
         console.log(error);
@@ -69,16 +95,17 @@ export default function CreatePage() {
     }
   };
 
+  if (error) return <div>{"(┛◉Д◉)┛彡┻━┻"}</div>;
+  if (isLoading) return <div>{"♪☆＼(^０^＼) ♪(／^-^)／☆♪"}</div>;
+
   return (
     <main className="ml-2 flex h-screen w-full min-w-[32rem] flex-col overflow-auto rounded-lg bg-neutral-800">
       <header className="sticky top-0 flex h-12 w-full items-center justify-between gap-2 rounded-t-lg bg-neutral-900 px-4 py-2">
         <div className="flex gap-4 overflow-hidden">
           <RiChat3Line className="h-6 w-6 shrink-0 -rotate-90" />
-          <h3 className="truncate font-vt323 text-lg font-bold">
-            Create new post
-          </h3>
+          <h3 className="truncate font-vt323 text-lg font-bold">Edit post</h3>
         </div>
-        <button onClick={() => router.push("/home")}>
+        <button onClick={() => router.push("/home/" + postId)}>
           <RiCloseCircleFill className="h-6 w-6 rotate-12 fill-amber-200 hover:fill-rose-600" />
         </button>
       </header>
@@ -93,10 +120,12 @@ export default function CreatePage() {
               name="title"
               placeholder="Title"
               className="bg-inherit text-xl outline-none"
-              value={post.title}
-              onChange={(e) => setPost({ ...post, title: e.target.value })}
+              value={editedPost.title}
+              onChange={(e) =>
+                setEditedPost({ ...editedPost, title: e.target.value })
+              }
             />
-            {error.title && (
+            {postError.title && (
               <p className="text-xs text-rose-600">Please enter post title </p>
             )}
           </div>
@@ -107,12 +136,12 @@ export default function CreatePage() {
               rows={10}
               placeholder="Enter a description"
               className="resize-none bg-inherit outline-none"
-              value={post.description}
+              value={editedPost.description}
               onChange={(e) =>
-                setPost({ ...post, description: e.target.value })
+                setEditedPost({ ...editedPost, description: e.target.value })
               }
             ></textarea>
-            {error.description && (
+            {postError.description && (
               <p className="text-xs text-rose-600">
                 Please enter post description{" "}
               </p>
@@ -123,11 +152,13 @@ export default function CreatePage() {
             name="link"
             placeholder="Media url"
             className="rounded-md bg-inherit bg-neutral-800 p-2 outline-none"
-            value={post.link}
-            onChange={(e) => setPost({ ...post, link: e.target.value })}
+            value={editedPost.link}
+            onChange={(e) =>
+              setEditedPost({ ...editedPost, link: e.target.value })
+            }
           />
           <button className="flex h-12 w-1/4 items-center justify-center gap-1 self-end rounded-3xl bg-rose-600 font-semibold text-amber-200 hover:bg-rose-500 hover:text-black">
-            Post
+            Edit
           </button>
         </form>
       </section>
