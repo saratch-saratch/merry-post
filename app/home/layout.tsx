@@ -5,7 +5,7 @@ export const metadata = {
   description: "Created by Saratch Tanapongwonglert",
 };
 
-export default function PostsLayout({
+export default function HomeLayout({
   children,
 }: {
   children: React.ReactNode;

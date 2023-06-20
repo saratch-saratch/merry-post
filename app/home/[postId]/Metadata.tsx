@@ -15,7 +15,7 @@ export default async function Metadata({ link }: { link: string }) {
         <img
           src={youtubeMeta?.thumbnail}
           alt=""
-          className="aspect-video h-full w-full rounded-md bg-slate-100 object-cover"
+          className="aspect-video h-full w-full rounded-md object-cover"
         ></img>
       </div>
     </Link>

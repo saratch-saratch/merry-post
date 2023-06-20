@@ -16,7 +16,7 @@ export default function PostDeleteButton() {
     //   if (!response.ok) {
     //     throw new Error(`Error: ${response.status}`);
     //   }
-    //   router.push("/posts");
+    //   router.push("/home");
     // } catch (error) {
     //   console.error("An error occurred while deleting the post:", error);
     // }

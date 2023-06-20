@@ -41,7 +41,7 @@ export default async function Post({
         </div>
       </div>
       <div className="invisible flex flex-col gap-1 group-hover:visible">
-        <Link href={"/posts/" + postId + "/edit"}>
+        <Link href={"/home/" + postId + "/edit"}>
           <RiEdit2Fill className="h-6 w-6 fill-neutral-500 hover:fill-white" />
         </Link>
         <PostDeleteButton />

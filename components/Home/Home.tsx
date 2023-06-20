@@ -13,7 +13,7 @@ export default async function Home() {
             <p>Welcome to Merry Post! {"(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧"}</p>
             <p>Click the button to create a new post</p>
           </div>
-          <Link href="/posts/create" className="w-1/4 self-center">
+          <Link href="/home/create" className="w-1/4 self-center">
             <button className="flex h-12 w-full items-center justify-center gap-1 rounded-3xl bg-rose-600 font-semibold text-amber-200 hover:bg-rose-500 hover:text-black">
               New Post
               <RiChat3Line className="h-6 w-6" />

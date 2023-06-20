@@ -10,7 +10,7 @@ export default function Login() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push("/posts");
+    router.push("/home");
   };
 
   return (

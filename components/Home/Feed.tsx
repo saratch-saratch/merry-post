@@ -45,7 +45,7 @@ export default function Feed() {
   return (
     <section className="flex flex-col gap-4">
       {sortedPosts.map((post: FetchedPost) => (
-        <Link href={"/posts/" + post.id} key={post.id}>
+        <Link href={"/home/" + post.id} key={post.id}>
           <div className="flex w-full flex-col justify-between gap-2 rounded-md bg-neutral-700 from-neutral-500 px-4 py-2 hover:cursor-pointer hover:bg-gradient-to-br">
             <div className="flex flex-col gap-2">
               <div className="flex justify-between gap-2">

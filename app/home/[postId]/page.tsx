@@ -25,7 +25,7 @@ export default async function PostPage({
             {post.title}
           </h3>
         </div>
-        <Link href="/posts">
+        <Link href="/home">
           <RiCloseCircleFill className="h-6 w-6 rotate-12 fill-amber-200 hover:fill-rose-600" />
         </Link>
       </header>
