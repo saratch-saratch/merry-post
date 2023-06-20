@@ -5,7 +5,6 @@ import fetcher from "@/utils/fetcher";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Job } from "@prisma/client";
 
 export default function Login() {
   const { data: jobs, error, isLoading } = useSWR("/api/jobs", fetcher);

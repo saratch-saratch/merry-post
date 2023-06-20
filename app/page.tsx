@@ -4,5 +4,5 @@ export default function Index() {
   // redirect("/login");
 
   //if have token then:
-  redirect("/posts");
+  redirect("/home");
 }

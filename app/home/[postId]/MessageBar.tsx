@@ -1,11 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { mutate } from "./Comments";
 
 export default function MessageBar({ postId }: { postId: string }) {
-  const router = useRouter();
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
