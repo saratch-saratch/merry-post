@@ -10,6 +10,11 @@ export default function Login() {
   const [user, setUser] = useState({ username: "", password: "" });
   const [error, setError] = useState({ username: false, password: false });
 
+  const handleChange = (event: FormEvent<HTMLInputElement>) => {
+    const { name, value } = event.currentTarget;
+    setUser({ ...user, [name]: value });
+  };
+
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     let newUser = { ...user };
@@ -72,23 +77,21 @@ export default function Login() {
         <div className="flex w-60 items-center gap-2">
           <input
             type="text"
+            name="username"
             placeholder="Username"
             className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
             value={user.username}
-            onChange={(event) =>
-              setUser({ ...user, username: event.target.value })
-            }
+            onChange={handleChange}
           />
           {error.username && <p className="flex-grow text-rose-600">X</p>}
         </div>
         <div className="flex w-60 items-center gap-2">
           <input
             type="password"
+            name="password"
             placeholder="Password"
             value={user.password}
-            onChange={(event) =>
-              setUser({ ...user, password: event.target.value })
-            }
+            onChange={handleChange}
             className="w-full flex-shrink bg-stone-50 px-4 text-inherit outline-none"
           />
           {error.password && <p className="flex-grow text-rose-600">X</p>}

@@ -1,6 +1,6 @@
 import { getErrorResponse } from "@/utils/helpers";
 import prisma from "@/prisma/prisma";
-import { RegisterUserInput, RegisterUserSchema } from "@/utils/user.schema";
+import { RegisterUserInput, RegisterUserSchema } from "@/utils/userSchema";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 

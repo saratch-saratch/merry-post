@@ -6,7 +6,7 @@ import moment from "moment";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { FetchedPost } from "@/types/fetchedPost";
-import getYoutubeThumbnails from "@/utils/getYoutubeThumbnails";
+import { getYoutubeThumbnails } from "@/utils/getYoutubeMeta";
 
 let mutate: () => Promise<any>;
 

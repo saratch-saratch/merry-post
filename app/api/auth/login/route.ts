@@ -1,7 +1,7 @@
 import { signJWT } from "@/utils/token";
 import { getErrorResponse } from "@/utils/helpers";
 import prisma from "@/prisma/prisma";
-import { LoginUserInput, LoginUserSchema } from "@/utils/user.schema";
+import { LoginUserInput, LoginUserSchema } from "@/utils/userSchema";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
