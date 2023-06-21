@@ -1,4 +1,4 @@
-import { YoutubeMeta } from "@/interfaces/youtubeMeta";
+import { YoutubeMeta } from "@/types/youtubeMeta";
 
 export default async function getYoutubeMeta(url: string) {
   try {

@@ -4,7 +4,7 @@ import { RiDeleteBinFill } from "react-icons/ri";
 import moment from "moment";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import { FetchedComment } from "@/interfaces/fetchedComment";
+import { FetchedComment } from "@/types/fetchedComment";
 
 let mutate: () => Promise<any>;
 

@@ -2,15 +2,57 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
 import { RiSwordFill } from "react-icons/ri";
+import { useState, FormEvent } from "react";
 
 export default function Login() {
   const router = useRouter();
+  const [user, setUser] = useState({ username: "", password: "" });
+  const [error, setError] = useState({ username: false, password: false });
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push("/home");
+    let newUser = { ...user };
+    let newError = { ...error };
+
+    const validateNewUser = (newUser: {
+      username: string;
+      password: string;
+    }) => {
+      if (newUser.username === "") {
+        newError.username = true;
+      } else {
+        newError.username = false;
+      }
+
+      if (newUser.password === "") {
+        newError.password = true;
+      } else {
+        newError.password = false;
+      }
+    };
+
+    validateNewUser(newUser);
+    setError(newError);
+    setUser(newUser);
+
+    if (!newError.username && !newError.password) {
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newUser),
+        });
+        if (!response.ok) {
+          setError({ username: true, password: true });
+        }
+        router.push("/home");
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -26,29 +68,30 @@ export default function Login() {
           Final Fantasy XIV Free Company's Dynamic Forum
         </p>
       </div>
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col items-center gap-4"
-      >
+      <form onSubmit={handleLogin} className="flex flex-col items-center gap-4">
         <div className="flex w-60 items-center gap-2">
           <input
             type="text"
             placeholder="Username"
             className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
+            value={user.username}
+            onChange={(event) =>
+              setUser({ ...user, username: event.target.value })
+            }
           />
-          <p style={{ display: "none" }} className="flex-grow text-rose-600">
-            X
-          </p>
+          {error.username && <p className="flex-grow text-rose-600">X</p>}
         </div>
         <div className="flex w-60 items-center gap-2">
           <input
             type="password"
             placeholder="Password"
+            value={user.password}
+            onChange={(event) =>
+              setUser({ ...user, password: event.target.value })
+            }
             className="w-full flex-shrink bg-stone-50 px-4 text-inherit outline-none"
           />
-          <p style={{ display: "" }} className="flex-grow text-rose-600">
-            X
-          </p>
+          {error.password && <p className="flex-grow text-rose-600">X</p>}
         </div>
         <button className="w-fit hover:text-stone-50">
           {"(ﾉ≧∇≦)ﾉ ﾐ Sign in"}

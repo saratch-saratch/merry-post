@@ -58,7 +58,7 @@ export default function CreatePage() {
         });
         if (!response.ok) {
           const errorData = await response.json();
-          console.log(errorData);
+          throw new Error(errorData.message);
         } else {
           mutate();
           router.push("/home");
