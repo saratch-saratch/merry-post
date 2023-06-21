@@ -68,13 +68,13 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  if (request.url.includes("/login") && authUser) {
-    return NextResponse.redirect(new URL("/profile", request.url));
-  }
+  // if (request.url.includes("/login") && authUser) {
+  //   return NextResponse.redirect(new URL("/home", request.url));
+  // }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/profile", "/login", "/api/users/:path*", "/api/auth/logout"],
+  matcher: ["/home", "/login", "/api/users/:path*", "/api/auth/logout"],
 };
