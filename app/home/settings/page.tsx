@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
 import { mutate } from "@/components/Home/Feed";
 
-export default function CreatePage() {
+export default function Settings() {
   const router = useRouter();
   const [post, setPost] = useState({ title: "", description: "", link: "" });
   const [error, setError] = useState({ title: false, description: false });
@@ -58,7 +58,7 @@ export default function CreatePage() {
         });
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message);
+          console.log(errorData);
         } else {
           mutate();
           router.push("/home");
@@ -75,7 +75,7 @@ export default function CreatePage() {
         <div className="flex gap-4 overflow-hidden">
           <RiChat3Line className="h-6 w-6 shrink-0 -rotate-90" />
           <h3 className="truncate font-vt323 text-lg font-bold">
-            Create new post
+            Profile settings
           </h3>
         </div>
         <button onClick={() => router.push("/home")}>

@@ -1,4 +1,5 @@
 import { RiCloseCircleFill, RiChat3Line } from "react-icons/ri";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import Comments from "./Comments";
 import MessageBar from "./MessageBar";
