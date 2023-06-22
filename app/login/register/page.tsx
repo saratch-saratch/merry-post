@@ -93,8 +93,7 @@ export default function Login() {
     }
   };
 
-  if (error) return <div>{"(┛◉Д◉)┛彡┻━┻"}</div>;
-  if (isLoading) return <div>{"♪☆＼(^０^＼) ♪(／^-^)／☆♪"}</div>;
+  if (error || isLoading) return <></>;
   return (
     <section className="relative h-full p-4 text-neutral-900">
       <form
