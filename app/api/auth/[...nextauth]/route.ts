@@ -1,9 +1,7 @@
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import Providers from "next-auth/providers";
 import prisma from "@/prisma/prisma";
-import bcrypt from "bcryptjs";
 
 export const authOption: NextAuthOptions = {
   providers: [
@@ -17,7 +15,7 @@ export const authOption: NextAuthOptions = {
         const user = await prisma.user.findUnique({
           where: { username: credentials?.username },
         });
-        if ((credentials?.password, user?.password)) {
+        if (user && credentials?.password === user?.password) {
           return { id: user.id, name: user.username };
         } else {
           throw new Error("Invalid username or password");
@@ -25,6 +23,20 @@ export const authOption: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
 };
 
 const handler = NextAuth(authOption);
