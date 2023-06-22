@@ -1,10 +1,8 @@
-"use client";
-
 import { RiCloseCircleFill, RiChat3Line } from "react-icons/ri";
 import Link from "next/link";
 import Content from "./Content";
 
-export default function Settings() {
+export default async function Settings() {
   return (
     <main className="ml-2 flex h-screen w-full min-w-[32rem] flex-col overflow-auto rounded-lg bg-neutral-800">
       <header className="sticky top-0 flex h-12 w-full shrink-0 items-center justify-between gap-2 rounded-t-lg bg-neutral-900 px-4 py-2">
