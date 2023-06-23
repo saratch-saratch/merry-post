@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { mutate } from "./Comments";
+import { mutateComments } from "./Comments";
 import { useSession } from "next-auth/react";
 
 export default function MessageBar({ postId }: { postId: string }) {
@@ -24,7 +24,7 @@ export default function MessageBar({ postId }: { postId: string }) {
           }
         );
         setMessage("");
-        mutate();
+        mutateComments();
       } catch (error) {
         setMessage("");
       }

@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
-import { mutate } from "@/app/home/Feed";
+import { mutateFeed } from "@/app/home/Feed";
+import { mutateComments } from "@/app/home/[postId]/Comments";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { signOut } from "next-auth/react";
@@ -80,7 +81,8 @@ export default function Content() {
           return;
         }
 
-        mutate();
+        mutateFeed();
+        mutateComments();
         router.push("/home");
       } catch (userError) {
         return;

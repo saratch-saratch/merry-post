@@ -3,7 +3,7 @@
 import { RiCloseCircleFill, RiChat3Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, FormEvent } from "react";
-import { mutate } from "@/app/home/Feed";
+import { mutateFeed } from "@/app/home/Feed";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 
@@ -91,7 +91,7 @@ export default function EditPage({ params }: { params: { postId: string } }) {
           const errorData = await response.json();
           console.log(errorData);
         } else {
-          mutate();
+          mutateFeed();
           router.push("/home" + postId);
         }
       } catch (error) {

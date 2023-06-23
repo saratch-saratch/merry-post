@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, FormEvent, ChangeEvent } from "react";
-import { mutate } from "@/app/home/Feed";
+import { mutateFeed } from "@/app/home/Feed";
 import { useSession } from "next-auth/react";
 
 export default function Form() {
@@ -86,7 +86,7 @@ export default function Form() {
           const errorData = await response.json();
           throw new Error(errorData.message);
         } else {
-          mutate();
+          mutateFeed();
           router.push("/home");
         }
       } catch (error) {

@@ -5,7 +5,7 @@ import moment from "moment";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 
-let mutate: () => Promise<any>;
+let mutateComments: () => Promise<any>;
 
 interface CommentProps {
   id: string;
@@ -26,10 +26,10 @@ export default function Comments({ postId, userId }: PostProps) {
     data: comments,
     error,
     isLoading,
-    mutate: mutateComments,
+    mutate,
   } = useSWR("/api/posts/" + postId + "/comments", fetcher);
 
-  mutate = mutateComments;
+  mutateComments = mutate;
 
   const deletePost = async (commentId: string, commentUserId: string) => {
     if (userId !== commentUserId) return;
@@ -42,7 +42,7 @@ export default function Comments({ postId, userId }: PostProps) {
       if (!response.ok) {
         return;
       }
-      mutate();
+      mutateComments();
     } catch (error) {
       return;
     }
@@ -85,4 +85,4 @@ export default function Comments({ postId, userId }: PostProps) {
   );
 }
 
-export { mutate };
+export { mutateComments };

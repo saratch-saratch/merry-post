@@ -6,7 +6,7 @@ import moment from "moment";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 
-let mutate: () => Promise<any>;
+let mutateFeed: () => Promise<any>;
 
 interface FetchedPost {
   id: string;
@@ -23,12 +23,12 @@ export default function Feed() {
     data: posts,
     isLoading,
     error,
-    mutate: mutatePosts,
+    mutate,
   } = useSWR("/api/posts", fetcher);
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const [sortedPosts, setSortedPosts] = useState<FetchedPost[]>([]);
 
-  mutate = mutatePosts;
+  mutateFeed = mutate;
 
   useEffect(() => {
     const getYoutubeThumbnails = async (urls: string[]) => {
@@ -97,4 +97,4 @@ export default function Feed() {
   );
 }
 
-export { mutate };
+export { mutateFeed };

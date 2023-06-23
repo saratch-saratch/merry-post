@@ -2,7 +2,7 @@
 
 import { RiDeleteBinFill } from "react-icons/ri";
 import { useParams, useRouter } from "next/navigation";
-import { mutate } from "../Feed";
+import { mutateFeed } from "../Feed";
 
 interface DeletePostProps {
   userId: string;
@@ -24,7 +24,7 @@ export default function DeletePost({ userId, postUserId }: DeletePostProps) {
       if (!response.ok) {
         return;
       }
-      mutate();
+      mutateFeed();
       router.push("/home");
     } catch (error) {
       return;
