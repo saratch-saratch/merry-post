@@ -5,6 +5,7 @@ import { useState, FormEvent } from "react";
 import { mutate } from "@/components/Home/Feed";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
+import { signOut } from "next-auth/react";
 
 export default function Content() {
   const {
@@ -155,8 +156,11 @@ export default function Content() {
           />
         </div>
         <div className="flex h-full w-1/2 flex-col justify-end gap-4">
-          <button className="flex h-12 w-3/4 items-center justify-center gap-1 self-end rounded-3xl bg-neutral-600 font-semibold text-white hover:bg-neutral-500 hover:text-black">
-            Log out
+          <button
+            onClick={() => signOut()}
+            className="flex h-12 w-3/4 items-center justify-center gap-1 self-end rounded-3xl bg-neutral-600 font-semibold text-white hover:bg-neutral-500 hover:text-black"
+          >
+            Sign out
           </button>
           <button
             type="submit"

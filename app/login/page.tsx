@@ -11,12 +11,13 @@ export default function Login() {
   const [user, setUser] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState(false);
   const [inputError, setInputError] = useState(false);
-  const { data: session } = useSession();
+  const { status } = useSession();
+
   useEffect(() => {
-    if (session) {
+    if (status === "authenticated") {
       router.push("/home");
     }
-  }, [session]);
+  }, [status]);
 
   const validateUser = (user: { username: string; password: string }) => {
     let error = false;
