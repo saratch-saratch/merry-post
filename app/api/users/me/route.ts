@@ -3,10 +3,13 @@ import { getErrorResponse } from "@/utils/helpers";
 import { RegisterUserInput, RegisterUserSchema } from "@/utils/userSchema";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
 
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest, res: NextResponse) {
   try {
-    const userId = request.headers.get("X-USER-ID");
+    const session = await getServerSession(authOptions);
+    const userId = session?.user.id;
 
     if (!userId) {
       return NextResponse.json(
@@ -30,7 +33,8 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const userId = request.headers.get("X-USER-ID");
+    const session = await getServerSession(authOptions);
+    const userId = session?.user.id;
 
     if (!userId) {
       return NextResponse.json(
@@ -64,27 +68,5 @@ export async function PUT(request: NextRequest) {
     }
 
     return getErrorResponse(500, error.message);
-  }
-}
-
-export async function DELETE(request: Request) {
-  try {
-    const userId = request.headers.get("X-USER-ID");
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "You are not logged in" },
-        { status: 401 }
-      );
-    }
-
-    const user = await prisma.user.delete({
-      where: {
-        id: userId,
-      },
-    });
-    return NextResponse.json(user, { status: 200 });
-  } catch (err) {
-    return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
 }
