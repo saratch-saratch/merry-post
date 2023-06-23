@@ -8,7 +8,13 @@ import { FetchedComment } from "@/types/fetchedComment";
 
 let mutate: () => Promise<any>;
 
-export default function Comments({ postId }: { postId: string }) {
+export default function Comments({
+  postId,
+  userId,
+}: {
+  postId: string;
+  userId: string;
+}) {
   const {
     data: comments,
     error,
@@ -59,11 +65,13 @@ export default function Comments({ postId }: { postId: string }) {
               <p className="text-xs">{moment(comment.createdAt).fromNow()}</p>
             </div>
           </div>
-          <div className="invisible flex flex-col gap-1 group-hover:visible">
-            <button onClick={() => deletePost(comment.id)}>
-              <RiDeleteBinFill className="h-6 w-6 fill-rose-400 hover:fill-red-600" />
-            </button>
-          </div>
+          {userId === comment.userId && (
+            <div className="invisible flex flex-col gap-1 group-hover:visible">
+              <button onClick={() => deletePost(comment.id)}>
+                <RiDeleteBinFill className="h-6 w-6 fill-rose-400 hover:fill-red-600" />
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </section>

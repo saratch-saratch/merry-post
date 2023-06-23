@@ -24,6 +24,7 @@ export async function GET(
       return {
         id: comment.id,
         user: comment.user.displayName,
+        userId: comment.userId,
         color: comment.user.job.color,
         message: comment.message,
         createdAt: comment.createdAt,

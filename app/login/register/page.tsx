@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-export default function Login() {
+export default function Register() {
   const { data: jobs, error, isLoading } = useSWR("/api/jobs", fetcher);
   const router = useRouter();
   const [userError, setUserError] = useState({
@@ -19,12 +19,12 @@ export default function Login() {
     confirmPassword: false,
   });
   const [userSubmit, setUserSubmit] = useState(false);
-  const { data: session } = useSession();
+  const { status } = useSession();
   useEffect(() => {
-    if (session) {
+    if (status === "authenticated") {
       router.push("/home");
     }
-  }, [session]);
+  }, [status]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -75,7 +75,7 @@ export default function Login() {
 
     //send POST request to create new user
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/users", {
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

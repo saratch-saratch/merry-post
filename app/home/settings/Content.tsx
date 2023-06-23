@@ -12,7 +12,7 @@ export default function Content() {
     data: user,
     error: userError,
     isLoading: userLoading,
-  } = useSWR("/api/users/me", fetcher);
+  } = useSWR("/api/user", fetcher);
   const {
     data: jobs,
     error: jobsError,
