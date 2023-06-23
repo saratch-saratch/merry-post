@@ -4,17 +4,24 @@ import { RiDeleteBinFill } from "react-icons/ri";
 import moment from "moment";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import { FetchedComment } from "@/types/fetchedComment";
 
 let mutate: () => Promise<any>;
 
-export default function Comments({
-  postId,
-  userId,
-}: {
+interface CommentProps {
+  id: string;
+  user: string;
+  userId: string;
+  color: string;
+  message: string;
+  createdAt: string;
+}
+
+interface PostProps {
   postId: string;
   userId: string;
-}) {
+}
+
+export default function Comments({ postId, userId }: PostProps) {
   const {
     data: comments,
     error,
@@ -24,28 +31,28 @@ export default function Comments({
 
   mutate = mutateComments;
 
-  const deletePost = async (commentId: string) => {
-    // try {
-    //   const response = await fetch(
-    //     process.env.NEXT_PUBLIC_API_URL + "/comments/" + commentId,
-    //     { method: "DELETE" }
-    //   );
-    //   if (!response.ok) {
-    //     throw new Error(`Error: ${response.status}`);
-    //   }
-    //   mutate();
-    // } catch (error) {
-    //   console.error("An error occurred while deleting the comment:", error);
-    // }
-    console.log("Comment deleted");
+  const deletePost = async (commentId: string, commentUserId: string) => {
+    if (userId !== commentUserId) return;
+
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/comments/" + commentId,
+        { method: "DELETE" }
+      );
+      if (!response.ok) {
+        return;
+      }
+      mutate();
+    } catch (error) {
+      return;
+    }
   };
 
-  if (error) return <div>{"(┛◉Д◉)┛彡┻━┻"}</div>;
-  if (isLoading) return <div>{"♪☆＼(^０^＼) ♪(／^-^)／☆♪"}</div>;
+  if (error || isLoading) return null;
 
   return (
     <section className="flex flex-col gap-4">
-      {comments.map((comment: FetchedComment) => (
+      {comments.map((comment: CommentProps) => (
         <div
           key={comment.id}
           className="group flex w-full gap-2 rounded-md px-4 py-2 hover:bg-neutral-700"
@@ -67,7 +74,7 @@ export default function Comments({
           </div>
           {userId === comment.userId && (
             <div className="invisible flex flex-col gap-1 group-hover:visible">
-              <button onClick={() => deletePost(comment.id)}>
+              <button onClick={() => deletePost(comment.id, comment.userId)}>
                 <RiDeleteBinFill className="h-6 w-6 fill-rose-400 hover:fill-red-600" />
               </button>
             </div>

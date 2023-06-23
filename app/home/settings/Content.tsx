@@ -7,6 +7,8 @@ import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { signOut } from "next-auth/react";
 
+//here
+
 export default function Content() {
   const {
     data: user,
@@ -63,6 +65,7 @@ export default function Content() {
     validateNewPost(newPost);
     setInputError(newError);
     setPost(newPost);
+
     if (!newError.title && !newError.description) {
       try {
         const response = await fetch("/api/posts", {
@@ -72,20 +75,20 @@ export default function Content() {
           },
           body: JSON.stringify(newPost),
         });
+
         if (!response.ok) {
-          const userErrorData = await response.json();
-          console.log(userErrorData);
-        } else {
-          mutate();
-          router.push("/home");
+          return;
         }
+
+        mutate();
+        router.push("/home");
       } catch (userError) {
-        console.log(userError);
+        return;
       }
     }
   };
 
-  if (userError || jobsError || userLoading || jobsLoading) return <></>;
+  if (userError || jobsError || userLoading || jobsLoading) return null;
 
   return (
     <>

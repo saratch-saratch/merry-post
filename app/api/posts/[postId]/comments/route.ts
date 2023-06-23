@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
 
 export async function GET(
   request: Request,
@@ -41,14 +43,23 @@ export async function POST(
   request: Request,
   { params }: { params: { postId: string } }
 ) {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user.id;
   const body = await request.json();
+
   try {
+    if (!userId) {
+      return NextResponse.json(
+        { error: "You are not logged in" },
+        { status: 401 }
+      );
+    }
+
     const comment = await prisma.comment.create({
       data: {
         message: body.message,
         post: { connect: { id: params.postId } },
-        //using token to get user id
-        user: { connect: { id: "1" } },
+        user: { connect: { id: userId } },
       },
     });
     return NextResponse.json(comment, { status: 201 });

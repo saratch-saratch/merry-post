@@ -15,6 +15,8 @@ export default function EditPage({ params }: { params: { postId: string } }) {
     isLoading,
   } = useSWR("/api/posts/" + postId, fetcher);
 
+  //here
+
   //use effect
   //kick user out if userId is not the same as the post userId
 

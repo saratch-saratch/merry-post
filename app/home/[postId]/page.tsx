@@ -20,11 +20,15 @@ export default function PostPage({ params }: { params: { postId: string } }) {
   const { data: session } = useSession();
   const userId = session?.user.id as string;
 
-  if (error) return <div>{"(┛◉Д◉)┛彡┻━┻"}</div>;
-  if (isLoading) return <div>{"♪☆＼(^０^＼) ♪(／^-^)／☆♪"}</div>;
+  if (error || isLoading)
+    return (
+      <section className="ml-2 flex h-screen w-full min-w-[32rem] flex-col rounded-lg bg-neutral-800">
+        <header className="sticky top-0 flex h-12 w-full shrink-0 items-center justify-between gap-2 rounded-t-lg bg-neutral-900 px-4 py-2" />
+      </section>
+    );
 
   return (
-    <main className="ml-2 flex h-screen w-full min-w-[32rem] flex-col rounded-lg bg-neutral-800">
+    <section className="ml-2 flex h-screen w-full min-w-[32rem] flex-col rounded-lg bg-neutral-800">
       <header className="sticky top-0 flex h-12 w-full shrink-0 items-center justify-between gap-2 rounded-t-lg bg-neutral-900 px-4 py-2">
         <div className="flex gap-4 overflow-hidden">
           <RiChat3Line className="h-6 w-6 shrink-0 -rotate-90" />
@@ -42,6 +46,6 @@ export default function PostPage({ params }: { params: { postId: string } }) {
         <Comments postId={params.postId} userId={userId} />
       </section>
       <MessageBar postId={params.postId} />
-    </main>
+    </section>
   );
 }

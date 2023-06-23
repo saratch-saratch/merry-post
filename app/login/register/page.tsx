@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
+//here
+
 export default function Register() {
   const { data: jobs, error, isLoading } = useSWR("/api/jobs", fetcher);
   const router = useRouter();
@@ -102,7 +104,7 @@ export default function Register() {
     }
   };
 
-  if (error || isLoading) return <></>;
+  if (error || isLoading) return null;
   return (
     <>
       {status === "unauthenticated" && (

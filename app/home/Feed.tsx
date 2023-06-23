@@ -5,10 +5,18 @@ import Link from "next/link";
 import moment from "moment";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import { FetchedPost } from "@/types/fetchedPost";
-import { getYoutubeThumbnails } from "@/utils/getYoutubeMeta";
 
 let mutate: () => Promise<any>;
+
+interface FetchedPost {
+  id: string;
+  title: string;
+  description: string;
+  link: string;
+  createdAt: string;
+  user: string;
+  color: string;
+}
 
 export default function Feed() {
   const {
@@ -23,6 +31,23 @@ export default function Feed() {
   mutate = mutatePosts;
 
   useEffect(() => {
+    const getYoutubeThumbnails = async (urls: string[]) => {
+      const thumbnailUrls: Record<string, string> = {};
+      for (const url of urls) {
+        try {
+          if (url.length > 0) {
+            const res = await fetch("https://youtube.com/oembed?url=" + url);
+            const metadata = await res.json();
+            const thumbnail = metadata.thumbnail_url;
+            thumbnailUrls[url] = thumbnail;
+          }
+        } catch (error) {
+          thumbnailUrls[url] = "";
+        }
+      }
+      return thumbnailUrls;
+    };
+
     if (posts) {
       const urls = posts.map((post: FetchedPost) => post.link);
       const fetchThumbnails = async () => {
@@ -39,7 +64,7 @@ export default function Feed() {
     }
   }, [posts]);
 
-  if (error || isLoading) return <></>;
+  if (error || isLoading) return null;
 
   return (
     <section className="flex flex-col gap-4">
