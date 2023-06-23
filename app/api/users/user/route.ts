@@ -20,7 +20,17 @@ export async function GET(req: NextRequest, res: NextResponse) {
       include: { job: true },
     });
 
-    return NextResponse.json(user, {
+    const filteredUser = {
+      id: user?.id,
+      username: user?.username,
+      email: user?.email,
+      displayName: user?.displayName,
+      jobId: user?.job.id,
+      jobName: user?.job.jobName,
+      color: user?.job.color,
+    };
+
+    return NextResponse.json(filteredUser, {
       status: 200,
     });
   } catch (error) {
