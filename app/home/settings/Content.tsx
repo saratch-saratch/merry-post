@@ -96,13 +96,13 @@ export default function Content() {
     <>
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 style={{ color: user.job.color }} className="text-3xl">
+          <h2 style={{ color: user.color }} className="text-3xl">
             {user.displayName}
           </h2>
           <p>{user.username}</p>
         </div>
         <div
-          style={{ backgroundColor: user.job.color }}
+          style={{ backgroundColor: user.color }}
           className="h-16 w-16 flex-shrink-0 rounded-full"
         />
       </div>
@@ -133,7 +133,7 @@ export default function Content() {
             name="jobId"
             className="rounded-md bg-inherit bg-neutral-800 p-2 outline-none"
           >
-            <option value={user.jobId}>{user.job.jobName}</option>
+            <option value={user.jobId}>{user.jobName}</option>
             {jobs
               .filter((job: { id: number }) => job.id !== user.jobId)
               .map((job: { id: number; jobName: string }) => (
@@ -162,7 +162,9 @@ export default function Content() {
         </div>
         <div className="flex h-full w-1/2 flex-col justify-end gap-4">
           <button
-            onClick={() => signOut()}
+            onClick={async () => {
+              await signOut({ callbackUrl: "/" });
+            }}
             className="flex h-12 w-3/4 items-center justify-center gap-1 self-end rounded-3xl bg-neutral-600 font-semibold text-white hover:bg-neutral-500 hover:text-black"
           >
             Sign out

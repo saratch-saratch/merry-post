@@ -30,15 +30,13 @@ export default function Login() {
       const result = await signIn("credentials", {
         username: user.username,
         password: user.password,
-        redirect: false,
+        callbackUrl: "/home",
       });
 
       if (result?.error) {
         setError({ login: true, input: false });
         return;
       }
-
-      router.push("/home");
     }
   };
 
