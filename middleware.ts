@@ -8,7 +8,6 @@ export const config = {
     "/api/posts/:path*",
     "/api/comments",
     "/api/comments/:path*",
-    "/api/users",
-    "/api/users/:path*",
+    "/api/users/user",
   ],
 };

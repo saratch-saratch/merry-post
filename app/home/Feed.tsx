@@ -5,24 +5,49 @@ import Link from "next/link";
 import moment from "moment";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import { FetchedPost } from "@/types/fetchedPost";
-import { getYoutubeThumbnails } from "@/utils/getYoutubeMeta";
 
-let mutate: () => Promise<any>;
+let mutateFeed: () => Promise<any>;
+
+interface FetchedPost {
+  id: string;
+  title: string;
+  description: string;
+  link: string;
+  createdAt: string;
+  user: string;
+  color: string;
+}
 
 export default function Feed() {
   const {
     data: posts,
     isLoading,
     error,
-    mutate: mutatePosts,
+    mutate,
   } = useSWR("/api/posts", fetcher);
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const [sortedPosts, setSortedPosts] = useState<FetchedPost[]>([]);
 
-  mutate = mutatePosts;
+  mutateFeed = mutate;
 
   useEffect(() => {
+    const getYoutubeThumbnails = async (urls: string[]) => {
+      const thumbnailUrls: Record<string, string> = {};
+      for (const url of urls) {
+        try {
+          if (url.length > 0) {
+            const res = await fetch("https://youtube.com/oembed?url=" + url);
+            const metadata = await res.json();
+            const thumbnail = metadata.thumbnail_url;
+            thumbnailUrls[url] = thumbnail;
+          }
+        } catch (error) {
+          thumbnailUrls[url] = "";
+        }
+      }
+      return thumbnailUrls;
+    };
+
     if (posts) {
       const urls = posts.map((post: FetchedPost) => post.link);
       const fetchThumbnails = async () => {
@@ -39,8 +64,7 @@ export default function Feed() {
     }
   }, [posts]);
 
-  if (error) return <div>{"(┛◉Д◉)┛彡┻━┻"}</div>;
-  if (isLoading) return <div>{"♪☆＼(^０^＼) ♪(／^-^)／☆♪"}</div>;
+  if (error || isLoading) return null;
 
   return (
     <section className="flex flex-col gap-4">
@@ -73,4 +97,4 @@ export default function Feed() {
   );
 }
 
-export { mutate };
+export { mutateFeed };

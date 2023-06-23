@@ -2,16 +2,20 @@
 
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
-import { mutate } from "@/components/Home/Feed";
+import { mutateFeed } from "@/app/home/Feed";
+import { mutateComments } from "@/app/home/[postId]/Comments";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
+import { signOut } from "next-auth/react";
+
+//here
 
 export default function Content() {
   const {
     data: user,
     error: userError,
     isLoading: userLoading,
-  } = useSWR("/api/users/me", fetcher);
+  } = useSWR("/api/users/user", fetcher);
   const {
     data: jobs,
     error: jobsError,
@@ -62,6 +66,7 @@ export default function Content() {
     validateNewPost(newPost);
     setInputError(newError);
     setPost(newPost);
+
     if (!newError.title && !newError.description) {
       try {
         const response = await fetch("/api/posts", {
@@ -71,20 +76,21 @@ export default function Content() {
           },
           body: JSON.stringify(newPost),
         });
+
         if (!response.ok) {
-          const userErrorData = await response.json();
-          console.log(userErrorData);
-        } else {
-          mutate();
-          router.push("/home");
+          return;
         }
+
+        mutateFeed();
+        mutateComments();
+        router.push("/home");
       } catch (userError) {
-        console.log(userError);
+        return;
       }
     }
   };
 
-  if (userError || jobsError || userLoading || jobsLoading) return <></>;
+  if (userError || jobsError || userLoading || jobsLoading) return null;
 
   return (
     <>
@@ -155,8 +161,11 @@ export default function Content() {
           />
         </div>
         <div className="flex h-full w-1/2 flex-col justify-end gap-4">
-          <button className="flex h-12 w-3/4 items-center justify-center gap-1 self-end rounded-3xl bg-neutral-600 font-semibold text-white hover:bg-neutral-500 hover:text-black">
-            Log out
+          <button
+            onClick={() => signOut()}
+            className="flex h-12 w-3/4 items-center justify-center gap-1 self-end rounded-3xl bg-neutral-600 font-semibold text-white hover:bg-neutral-500 hover:text-black"
+          >
+            Sign out
           </button>
           <button
             type="submit"

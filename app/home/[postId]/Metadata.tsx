@@ -1,15 +1,46 @@
-import Link from "next/link";
-import { getYoutubeMeta } from "@/utils/getYoutubeMeta";
+"use client";
 
-export default async function Metadata({ link }: { link: string }) {
-  const youtubeMeta = await getYoutubeMeta(link);
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+interface YoutubeMetaProps {
+  provider: string;
+  title: string;
+  author: string;
+  thumbnail: string;
+}
+
+export default function Metadata({ link }: { link: string }) {
+  const [youtubeMeta, setYoutubeMeta] = useState<YoutubeMetaProps | null>(null);
+
+  useEffect(() => {
+    const fetchYoutubeMeta = async () => {
+      try {
+        const res = await fetch("https://youtube.com/oembed?url=" + link);
+        const data = await res.json();
+        const meta: YoutubeMetaProps = {
+          provider: data.provider_name,
+          title: data.title,
+          author: data.author_name,
+          thumbnail: data.thumbnail_url,
+        };
+        setYoutubeMeta(meta);
+      } catch (error) {
+        setYoutubeMeta(null);
+      }
+    };
+
+    fetchYoutubeMeta();
+  }, [link]);
+
+  if (!youtubeMeta) return null;
 
   return (
-    <Link href={link} className="w-3/4">
-      <div className="flex flex-col gap-2 rounded-md bg-neutral-900 p-2">
+    <Link href={link}>
+      <div className="flex w-4/5 flex-col gap-2 rounded-md bg-neutral-900 p-2">
         <div>
           <p className="text-xs">{youtubeMeta?.provider}</p>
-          <h3 className="text-rose-600">{youtubeMeta?.title}</h3>
+          <h3 className="line-clamp-2 text-rose-600 ">{youtubeMeta?.title}</h3>
           <p className="text-xs">{youtubeMeta?.author}</p>
         </div>
         <img

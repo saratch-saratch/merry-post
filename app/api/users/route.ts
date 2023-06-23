@@ -4,6 +4,8 @@ import { RegisterUserInput, RegisterUserSchema } from "@/utils/userSchema";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
+//here need rewrite
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as RegisterUserInput;

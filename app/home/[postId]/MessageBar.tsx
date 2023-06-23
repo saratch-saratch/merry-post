@@ -1,22 +1,34 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { mutate } from "./Comments";
+import { mutateComments } from "./Comments";
+import { useSession } from "next-auth/react";
 
 export default function MessageBar({ postId }: { postId: string }) {
+  const { status } = useSession();
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await fetch(
-      process.env.NEXT_PUBLIC_API_URL + "/posts/" + postId + "/comments",
-      {
-        method: "POST",
-        body: JSON.stringify({ message: message }),
+
+    if (status === "authenticated" && message !== "") {
+      try {
+        await fetch(
+          process.env.NEXT_PUBLIC_API_URL + "/posts/" + postId + "/comments",
+          {
+            method: "POST",
+            body: JSON.stringify({ message: message }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setMessage("");
+        mutateComments();
+      } catch (error) {
+        setMessage("");
       }
-    );
-    setMessage("");
-    mutate();
+    }
   };
 
   return (

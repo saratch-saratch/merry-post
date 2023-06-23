@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
 
+//here
+//need protection
+
 export async function GET(
   request: Request,
   { params }: { params: { postId: string } }
