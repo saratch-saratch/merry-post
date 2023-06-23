@@ -1,8 +1,5 @@
 import prisma from "@/prisma/prisma";
-import { getErrorResponse } from "@/utils/helpers";
-import { RegisterUserInput, RegisterUserSchema } from "@/utils/userSchema";
 import { NextRequest, NextResponse } from "next/server";
-import { ZodError } from "zod";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 
@@ -43,8 +40,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const body = (await request.json()) as RegisterUserInput;
-    const data = RegisterUserSchema.parse(body);
+    const data = await request.json();
 
     const user = await prisma.user.update({
       where: {
@@ -62,11 +58,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(user, {
       status: 200,
     });
-  } catch (error: any) {
-    if (error instanceof ZodError) {
-      return getErrorResponse(400, "failed validations", error);
-    }
-
-    return getErrorResponse(500, error.message);
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
 }
