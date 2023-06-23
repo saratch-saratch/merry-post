@@ -1,25 +1,34 @@
+"use client";
+
 import { RiCloseCircleFill, RiChat3Line } from "react-icons/ri";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import Comments from "./Comments";
 import MessageBar from "./MessageBar";
 import Post from "./Post";
+import useSWR from "swr";
+import fetcher from "@/utils/fetcher";
 
-async function getPost(postId: string) {
-  const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/posts/" + postId);
-  return res.json();
-}
+export default function PostPage({ params }: { params: { postId: string } }) {
+  const { postId } = params;
+  const {
+    data: post,
+    error,
+    isLoading,
+  } = useSWR("/api/posts/" + postId, fetcher);
+  const {
+    data: userId,
+    error: userError,
+    isLoading: userIsLoading,
+  } = useSWR("/api/users/me/id", fetcher);
 
-export default async function PostPage({
-  params,
-}: {
-  params: { postId: string };
-}) {
-  const post = await getPost(params.postId);
+  if (error) return <div>{"(┛◉Д◉)┛彡┻━┻"}</div>;
+  if (isLoading) return <div>{"♪☆＼(^０^＼) ♪(／^-^)／☆♪"}</div>;
+  if (userError) return <div>{"(┛◉Д◉)┛彡┻━┻"}</div>;
+  if (userIsLoading) return <div>{"♪☆＼(^０^＼) ♪(／^-^)／☆♪"}</div>;
 
   return (
     <main className="ml-2 flex h-screen w-full min-w-[32rem] flex-col rounded-lg bg-neutral-800">
-      <header className="sticky top-0 flex h-12 w-full items-center justify-between gap-2 rounded-t-lg bg-neutral-900 px-4 py-2">
+      <header className="sticky top-0 flex h-12 w-full shrink-0 items-center justify-between gap-2 rounded-t-lg bg-neutral-900 px-4 py-2">
         <div className="flex gap-4 overflow-hidden">
           <RiChat3Line className="h-6 w-6 shrink-0 -rotate-90" />
           <h3 className="truncate font-vt323 text-lg font-bold">
@@ -31,7 +40,7 @@ export default async function PostPage({
         </Link>
       </header>
       <section className="flex h-full flex-col gap-4 overflow-x-hidden overflow-y-scroll p-4">
-        <Post postId={params.postId} post={post} />
+        <Post postId={params.postId} post={post} userId={userId.userId} />
         <div className="h-1 w-full shrink-0 rounded-lg bg-gradient-to-r from-neutral-800 via-neutral-700 to-amber-200" />
         <Comments postId={params.postId} />
       </section>

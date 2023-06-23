@@ -1,6 +1,6 @@
 import { YoutubeMeta } from "@/types/youtubeMeta";
 
-export default async function getYoutubeMeta(url: string) {
+export async function getYoutubeMeta(url: string) {
   try {
     const res = await fetch("https://youtube.com/oembed?url=" + url);
     const data = await res.json();
@@ -12,6 +12,23 @@ export default async function getYoutubeMeta(url: string) {
     };
     return youtubeMeta;
   } catch (error) {
-    console.error("(┛◉Д◉)┛彡┻━┻ ", url);
+    return null;
   }
+}
+
+export async function getYoutubeThumbnails(urls: string[]) {
+  const thumbnailUrls: Record<string, string> = {};
+  for (const url of urls) {
+    try {
+      if (url.length > 0) {
+        const res = await fetch("https://youtube.com/oembed?url=" + url);
+        const metadata = await res.json();
+        const thumbnail = metadata.thumbnail_url;
+        thumbnailUrls[url] = thumbnail;
+      }
+    } catch (error) {
+      thumbnailUrls[url] = "";
+    }
+  }
+  return thumbnailUrls;
 }

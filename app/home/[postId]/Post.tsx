@@ -1,15 +1,19 @@
+"use client";
+
 import { RiEdit2Fill } from "react-icons/ri";
 import Link from "next/link";
 import moment from "moment";
 import PostDeleteButton from "./PostDeleteButton";
 import Metadata from "./Metadata";
 
-export default async function Post({
+export default function Post({
   postId,
   post,
+  userId,
 }: {
   postId: string;
   post: any;
+  userId: string;
 }) {
   const date = moment(post.createdAt).fromNow();
   const modifiedDate = moment(post.lastModified).fromNow();
@@ -40,12 +44,14 @@ export default async function Post({
           </div>
         </div>
       </div>
-      <div className="invisible flex flex-col gap-1 group-hover:visible">
-        <Link href={"/home/" + postId + "/edit"}>
-          <RiEdit2Fill className="h-6 w-6 fill-neutral-500 hover:fill-white" />
-        </Link>
-        <PostDeleteButton />
-      </div>
+      {userId === post.userId && (
+        <div className="invisible flex flex-col gap-1 group-hover:visible">
+          <Link href={"/home/" + postId + "/edit"}>
+            <RiEdit2Fill className="h-6 w-6 fill-neutral-500 hover:fill-white" />
+          </Link>
+          <PostDeleteButton />
+        </div>
+      )}
     </section>
   );
 }

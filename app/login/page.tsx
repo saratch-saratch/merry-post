@@ -3,96 +3,90 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { RiSwordFill } from "react-icons/ri";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
 
 export default function Login() {
   const router = useRouter();
   const [user, setUser] = useState({ username: "", password: "" });
-  const [error, setError] = useState({ username: false, password: false });
+  const [loginError, setLoginError] = useState(false);
+  const [inputError, setInputError] = useState(false);
+  const { data: session } = useSession();
+  useEffect(() => {
+    if (session) {
+      router.push("/home");
+    }
+  }, [session]);
+
+  const validateUser = (user: { username: string; password: string }) => {
+    let error = false;
+    if (user.username === "" || user.password === "") error = true;
+    return error;
+  };
+
+  const handleChange = (event: FormEvent<HTMLInputElement>) => {
+    const { name, value } = event.currentTarget;
+    setUser((user) => ({ ...user, [name]: value }));
+  };
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    let newUser = { ...user };
-    let newError = { ...error };
 
-    const validateNewUser = (newUser: {
-      username: string;
-      password: string;
-    }) => {
-      if (newUser.username === "") {
-        newError.username = true;
-      } else {
-        newError.username = false;
+    const validationError = validateUser(user);
+    setInputError(validationError);
+
+    if (!validationError) {
+      const result = await signIn("credentials", {
+        username: user.username,
+        password: user.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setLoginError(true);
+        return;
       }
 
-      if (newUser.password === "") {
-        newError.password = true;
-      } else {
-        newError.password = false;
-      }
-    };
-
-    validateNewUser(newUser);
-    setError(newError);
-    setUser(newUser);
-
-    if (!newError.username && !newError.password) {
-      try {
-        const response = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newUser),
-        });
-        if (!response.ok) {
-          setError({ username: true, password: true });
-        }
-        router.push("/home");
-      } catch (error) {
-        console.log(error);
-      }
+      router.push("/home");
     }
   };
 
   return (
-    <section className="relative flex h-full flex-col items-center justify-between gap-4 p-4 text-neutral-900">
-      <div className="flex flex-col items-center">
-        <div className="flex items-center gap-2">
-          <h1 className="text-center font-vt323 text-3xl text-inherit">
-            Merry Post
-          </h1>
-          <RiSwordFill className="h-7 w-7 fill-stone-50" />
-        </div>
-        <p className="text-sm text-inherit">
-          Final Fantasy XIV Free Company's Dynamic Forum
-        </p>
+    <section className="relative flex h-full flex-col items-center justify-between p-4 text-neutral-900">
+      <div className="flex items-center gap-2">
+        <h1 className="text-center font-vt323 text-3xl text-inherit">
+          Merry Post
+        </h1>
+        <RiSwordFill className="h-7 w-7 fill-stone-50" />
       </div>
-      <form onSubmit={handleLogin} className="flex flex-col items-center gap-4">
-        <div className="flex w-60 items-center gap-2">
-          <input
-            type="text"
-            placeholder="Username"
-            className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
-            value={user.username}
-            onChange={(event) =>
-              setUser({ ...user, username: event.target.value })
-            }
-          />
-          {error.username && <p className="flex-grow text-rose-600">X</p>}
-        </div>
-        <div className="flex w-60 items-center gap-2">
-          <input
-            type="password"
-            placeholder="Password"
-            value={user.password}
-            onChange={(event) =>
-              setUser({ ...user, password: event.target.value })
-            }
-            className="w-full flex-shrink bg-stone-50 px-4 text-inherit outline-none"
-          />
-          {error.password && <p className="flex-grow text-rose-600">X</p>}
-        </div>
+      <form
+        onSubmit={handleLogin}
+        className="flex w-60 flex-col items-center gap-4"
+      >
+        {inputError && (
+          <p className="text-sm text-rose-600">
+            Username and password are required{" "}
+          </p>
+        )}
+        {loginError && (
+          <p className="text-sm text-rose-600">Invalid username or password</p>
+        )}
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
+          value={user.username}
+          onChange={handleChange}
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={user.password}
+          onChange={handleChange}
+          className="w-full flex-shrink bg-stone-50 px-4 text-inherit outline-none"
+        />
         <button className="w-fit hover:text-stone-50">
           {"(ﾉ≧∇≦)ﾉ ﾐ Sign in"}
         </button>

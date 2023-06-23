@@ -1,5 +1,5 @@
 import Link from "next/link";
-import getYoutubeMeta from "@/utils/getYoutubeMeta";
+import { getYoutubeMeta } from "@/utils/getYoutubeMeta";
 
 export default async function Metadata({ link }: { link: string }) {
   const youtubeMeta = await getYoutubeMeta(link);
