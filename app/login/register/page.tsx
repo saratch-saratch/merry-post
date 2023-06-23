@@ -2,13 +2,13 @@
 
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function Login() {
   const { data: jobs, error, isLoading } = useSWR("/api/jobs", fetcher);
-
   const router = useRouter();
   const [userError, setUserError] = useState({
     username: false,
@@ -19,6 +19,12 @@ export default function Login() {
     confirmPassword: false,
   });
   const [userSubmit, setUserSubmit] = useState(false);
+  const { data: session } = useSession();
+  useEffect(() => {
+    if (session) {
+      router.push("/home");
+    }
+  }, [session]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

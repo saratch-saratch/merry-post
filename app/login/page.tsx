@@ -3,14 +3,20 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { RiSwordFill } from "react-icons/ri";
-import { useState, FormEvent } from "react";
-import { signIn } from "next-auth/react";
+import { useState, FormEvent, useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
 
 export default function Login() {
   const router = useRouter();
   const [user, setUser] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState(false);
   const [inputError, setInputError] = useState(false);
+  const { data: session } = useSession();
+  useEffect(() => {
+    if (session) {
+      router.push("/home");
+    }
+  }, [session]);
 
   const validateUser = (user: { username: string; password: string }) => {
     let error = false;
