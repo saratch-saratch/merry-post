@@ -3,32 +3,28 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { RiSwordFill } from "react-icons/ri";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, ChangeEvent } from "react";
 import { useSession, signIn } from "next-auth/react";
 
 export default function Login() {
   const router = useRouter();
   const [user, setUser] = useState({ username: "", password: "" });
-  const [loginError, setLoginError] = useState(false);
-  const [inputError, setInputError] = useState(false);
+  const [error, setError] = useState({ login: false, input: false });
   const { status } = useSession();
 
-  const validateUser = (user: { username: string; password: string }) => {
-    let error = false;
-    if (user.username === "" || user.password === "") error = true;
-    return error;
-  };
-
-  const handleChange = (event: FormEvent<HTMLInputElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.currentTarget;
     setUser((user) => ({ ...user, [name]: value }));
   };
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    let validationError = false;
 
-    const validationError = validateUser(user);
-    setInputError(validationError);
+    if (user.username === "" || user.password === "") {
+      validationError = true;
+      setError({ login: false, input: true });
+    }
 
     if (!validationError) {
       const result = await signIn("credentials", {
@@ -38,7 +34,7 @@ export default function Login() {
       });
 
       if (result?.error) {
-        setLoginError(true);
+        setError({ login: true, input: false });
         return;
       }
 
@@ -66,12 +62,12 @@ export default function Login() {
             onSubmit={handleLogin}
             className="flex w-60 flex-col items-center gap-4"
           >
-            {inputError && (
+            {error.input && (
               <p className="text-sm text-rose-600">
                 Username and password are required{" "}
               </p>
             )}
-            {loginError && (
+            {error.login && (
               <p className="text-sm text-rose-600">
                 Invalid username or password
               </p>

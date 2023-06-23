@@ -2,59 +2,86 @@
 
 import { RiCloseCircleFill, RiChat3Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, ChangeEvent } from "react";
 import { mutate } from "@/app/home/Feed";
+import { useSession } from "next-auth/react";
 
 export default function CreatePage() {
   const router = useRouter();
+  const { status } = useSession();
   const [post, setPost] = useState({ title: "", description: "", link: "" });
-  const [error, setError] = useState({ title: false, description: false });
+  const [error, setError] = useState({
+    title: false,
+    description: false,
+    link: false,
+  });
+
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.currentTarget;
+    setPost((post) => ({ ...post, [name]: value }));
+  };
+
+  const validatePost = (
+    newPost: {
+      title: string;
+      description: string;
+      link: string;
+    },
+    newError: {
+      title: boolean;
+      description: boolean;
+      link: boolean;
+    }
+  ) => {
+    if (newPost.title === "") {
+      newError.title = true;
+    } else {
+      newError.title = false;
+    }
+
+    if (newPost.description === "") {
+      newError.description = true;
+    } else {
+      newError.description = false;
+    }
+
+    if (newPost.link !== "") {
+      try {
+        const url = new URL(newPost.link);
+        if (url.hostname !== "www.youtube.com") {
+          newError.link = true;
+        } else {
+          newError.link = false;
+        }
+      } catch (error) {
+        newError.link = true;
+      }
+    }
+  };
 
   const handleCreate = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     let newPost = { ...post };
     let newError = { ...error };
 
-    const validateNewPost = (newPost: {
-      title: string;
-      description: string;
-      link: string;
-    }) => {
-      if (newPost.title === "") {
-        newError.title = true;
-      } else {
-        newError.title = false;
-      }
-
-      if (newPost.description === "") {
-        newError.description = true;
-      } else {
-        newError.description = false;
-      }
-
-      if (newPost.link !== "") {
-        try {
-          const url = new URL(newPost.link);
-          if (url.hostname !== "www.youtube.com") {
-            newPost.link = "";
-          }
-        } catch (error) {
-          newPost.link = "";
-        }
-      }
-    };
-
-    validateNewPost(newPost);
+    validatePost(newPost, newError);
     setError(newError);
     setPost(newPost);
-    if (!newError.title && !newError.description) {
+
+    if (
+      status === "authenticated" &&
+      !newError.title &&
+      !newError.description
+    ) {
       try {
         const response = await fetch("/api/posts", {
           method: "POST",
+          body: JSON.stringify(newPost),
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(newPost),
         });
         if (!response.ok) {
           const errorData = await response.json();
@@ -84,7 +111,7 @@ export default function CreatePage() {
       </header>
       <section className="flex h-full flex-col overflow-x-hidden overflow-y-scroll p-4">
         <form
-          onSubmit={(event: FormEvent<HTMLFormElement>) => handleCreate(event)}
+          onSubmit={handleCreate}
           className="flex w-full flex-col gap-4 rounded-md bg-neutral-700 p-4"
         >
           <div className="flex flex-col gap-1">
@@ -94,7 +121,7 @@ export default function CreatePage() {
               placeholder="Title"
               className="bg-inherit text-xl outline-none"
               value={post.title}
-              onChange={(e) => setPost({ ...post, title: e.target.value })}
+              onChange={handleChange}
             />
             {error.title && (
               <p className="text-xs text-rose-600">Please enter post title </p>
@@ -108,24 +135,27 @@ export default function CreatePage() {
               placeholder="Enter a description"
               className="resize-none bg-inherit outline-none"
               value={post.description}
-              onChange={(e) =>
-                setPost({ ...post, description: e.target.value })
-              }
+              onChange={handleChange}
             ></textarea>
             {error.description && (
               <p className="text-xs text-rose-600">
-                Please enter post description{" "}
+                Please enter post description
               </p>
             )}
           </div>
-          <input
-            type="text"
-            name="link"
-            placeholder="Media url"
-            className="rounded-md bg-inherit bg-neutral-800 p-2 outline-none"
-            value={post.link}
-            onChange={(e) => setPost({ ...post, link: e.target.value })}
-          />
+          <div className="flex flex-col gap-1">
+            <input
+              type="text"
+              name="link"
+              placeholder="Media url"
+              className="rounded-md bg-inherit bg-neutral-800 p-2 outline-none"
+              value={post.link}
+              onChange={handleChange}
+            />
+            {error.link && (
+              <p className="text-xs text-rose-600">Invalid media url</p>
+            )}
+          </div>
           <button className="flex h-12 w-1/4 items-center justify-center gap-1 self-end rounded-3xl bg-rose-600 font-semibold text-amber-200 hover:bg-rose-500 hover:text-black">
             Post
           </button>
