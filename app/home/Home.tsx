@@ -1,12 +1,33 @@
-import { RiChat3Line } from "react-icons/ri";
-import Header from "./Header";
+import {
+  RiChat3Line,
+  RiUser3Fill,
+  RiSwordFill,
+  RiMenu4Fill,
+} from "react-icons/ri";
 import Feed from "./Feed";
 import Link from "next/link";
+import ReloadButton from "./ReloadButton";
 
 export default async function Home() {
   return (
     <section className="flex h-screen w-full min-w-[32rem] flex-col overflow-scroll rounded-lg bg-neutral-800">
-      <Header />
+      <header className="sticky top-0 flex h-12 items-center rounded-t-lg bg-neutral-900 px-4 py-2">
+        <nav className="flex flex-1 items-center">
+          <Link href="/home/settings">
+            <button className="group flex">
+              <RiMenu4Fill className="h-6 w-6 -rotate-12 fill-amber-200 group-hover:fill-rose-600" />
+              <RiUser3Fill className="h-6 w-6 -rotate-12 fill-amber-200 group-hover:fill-rose-600" />
+            </button>
+          </Link>
+          <div className="flex w-full justify-center">
+            <Link href="/" className="flex items-center gap-2">
+              <h1 className="font-vt323 text-2xl">Merry Post</h1>
+              <RiSwordFill className="h-6 w-6 rotate-12" />
+            </Link>
+          </div>
+          <ReloadButton />
+        </nav>
+      </header>
       <section className="flex flex-col gap-4 overflow-x-hidden overflow-y-scroll bg-neutral-800 p-4">
         <div className="flex flex-row gap-4">
           <div className="w-3/4 rounded-md bg-gradient-to-r from-neutral-700 via-neutral-800 to-neutral-800 px-4 py-2">

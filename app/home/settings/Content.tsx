@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
-import { mutate } from "@/components/Home/Feed";
+import { mutate } from "@/app/home/Feed";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { signOut } from "next-auth/react";

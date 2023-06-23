@@ -39,8 +39,7 @@ export default function Feed() {
     }
   }, [posts]);
 
-  if (error) return <div>{"(┛◉Д◉)┛彡┻━┻"}</div>;
-  if (isLoading) return <div>{"♪☆＼(^０^＼) ♪(／^-^)／☆♪"}</div>;
+  if (error || isLoading) return <></>;
 
   return (
     <section className="flex flex-col gap-4">

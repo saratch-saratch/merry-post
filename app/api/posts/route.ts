@@ -1,8 +1,20 @@
 import { NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
 
 export async function GET(request: Request) {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user.id;
+
   try {
+    if (!userId) {
+      return NextResponse.json(
+        { error: "You are not logged in" },
+        { status: 401 }
+      );
+    }
+
     const posts = await prisma.post.findMany({
       include: {
         user: {
@@ -33,37 +45,44 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user.id;
   const body = await request.json();
   const { title, description, link } = body;
-  let checkedLink: string;
+  let validatedUrl = "";
+
   try {
-    if (!title || !description) {
+    if (!userId) {
+      return NextResponse.json(
+        { error: "You are not logged in" },
+        { status: 401 }
+      );
+    }
+
+    if (!title || !description || title === "" || description === "") {
       return NextResponse.json(
         { error: "Title and description are required" },
         { status: 400 }
       );
     }
 
-    if (!link) {
-      checkedLink = "";
-    } else {
+    if (link) {
       const url = new URL(link);
-      if (!url.hostname.includes(".")) {
+      if (!url.hostname.includes("youtube.com")) {
         return NextResponse.json(
           { error: "Link is not a valid url" },
           { status: 400 }
         );
       }
-      checkedLink = link;
+      validatedUrl = link;
     }
 
     const post = await prisma.post.create({
       data: {
         title,
         description,
-        link: checkedLink,
-        //use token to get user id
-        user: { connect: { id: "1" } },
+        link: validatedUrl,
+        user: { connect: { id: userId } },
       },
     });
     return NextResponse.json(post, { status: 201 });

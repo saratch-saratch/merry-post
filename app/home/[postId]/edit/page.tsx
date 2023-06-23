@@ -3,7 +3,7 @@
 import { RiCloseCircleFill, RiChat3Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, FormEvent } from "react";
-import { mutate } from "@/components/Home/Feed";
+import { mutate } from "@/app/home/Feed";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 

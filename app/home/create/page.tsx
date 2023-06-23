@@ -3,7 +3,7 @@
 import { RiCloseCircleFill, RiChat3Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
-import { mutate } from "@/components/Home/Feed";
+import { mutate } from "@/app/home/Feed";
 
 export default function CreatePage() {
   const router = useRouter();
