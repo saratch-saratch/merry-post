@@ -3,6 +3,8 @@ import prisma from "@/prisma/prisma";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 
+//here check again
+
 export async function GET(
   request: Request,
   { params }: { params: { postId: string } }

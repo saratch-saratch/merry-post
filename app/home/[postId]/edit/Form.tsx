@@ -1,13 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState, FormEvent, ChangeEvent } from "react";
 import { mutateFeed } from "@/app/home/Feed";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { useSession } from "next-auth/react";
-
-//here
 
 export default function Form({ postId }: { postId: string }) {
   const {
@@ -28,7 +26,85 @@ export default function Form({ postId }: { postId: string }) {
   const [postError, setPostError] = useState({
     title: false,
     description: false,
+    link: false,
   });
+
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.currentTarget;
+    setEditedPost((post) => ({ ...post, [name]: value }));
+  };
+
+  const validatePost = (
+    newEditedPost: {
+      title: string;
+      description: string;
+      link: string;
+    },
+    newError: {
+      title: boolean;
+      description: boolean;
+      link: boolean;
+    }
+  ) => {
+    if (newEditedPost.title === "") {
+      newError.title = true;
+    } else {
+      newError.title = false;
+    }
+
+    if (newEditedPost.description === "") {
+      newError.description = true;
+    } else {
+      newError.description = false;
+    }
+
+    if (newEditedPost.link !== "") {
+      try {
+        const url = new URL(post.link);
+        if (url.hostname !== "www.youtube.com") {
+          newEditedPost.link = "";
+        }
+      } catch (error) {
+        newEditedPost.link = "";
+      }
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    let newEditedPost = { ...editedPost };
+    let newError = { ...postError };
+
+    validatePost(newEditedPost, newError);
+    setPostError(newError);
+    setEditedPost(newEditedPost);
+    if (
+      userId === post.userId &&
+      !newError.title &&
+      !newError.description &&
+      !newError.link
+    ) {
+      try {
+        const response = await fetch("/api/posts/" + postId, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newEditedPost),
+        });
+        if (!response.ok) {
+          return;
+        } else {
+          mutateFeed();
+          router.push("/home/" + postId);
+        }
+      } catch (error) {
+        return;
+      }
+    }
+  };
 
   useEffect(() => {
     if (post) {
@@ -44,72 +120,13 @@ export default function Form({ postId }: { postId: string }) {
     }
   }, [post]);
 
-  const handleCreate = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    let newPost = { ...post };
-    let newError = { ...postError };
-
-    const validateNewPost = (newPost: {
-      title: string;
-      description: string;
-      link: string;
-    }) => {
-      if (newPost.title === "") {
-        newError.title = true;
-      } else {
-        newError.title = false;
-      }
-
-      if (newPost.description === "") {
-        newError.description = true;
-      } else {
-        newError.description = false;
-      }
-
-      if (newPost.link !== "") {
-        try {
-          const url = new URL(post.link);
-          if (url.hostname !== "www.youtube.com") {
-            newPost.link = "";
-          }
-        } catch (error) {
-          newPost.link = "";
-        }
-      }
-    };
-
-    validateNewPost(newPost);
-    setPostError(newError);
-    setEditedPost(newPost);
-    if (!newError.title && !newError.description) {
-      try {
-        const response = await fetch("/api/posts/" + postId, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newPost),
-        });
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.log(errorData);
-        } else {
-          mutateFeed();
-          router.push("/home" + postId);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
   if (error || isLoading) return null;
 
   return (
     <>
-      {userId === post.uerId && (
+      {userId === post.userId && (
         <form
-          onSubmit={(event: FormEvent<HTMLFormElement>) => handleCreate(event)}
+          onSubmit={handleSubmit}
           className="flex w-full flex-col gap-4 rounded-md bg-neutral-700 p-4"
         >
           <div className="flex flex-col gap-1">
@@ -119,9 +136,7 @@ export default function Form({ postId }: { postId: string }) {
               placeholder="Title"
               className="bg-inherit text-xl outline-none"
               value={editedPost.title}
-              onChange={(e) =>
-                setEditedPost({ ...editedPost, title: e.target.value })
-              }
+              onChange={handleChange}
             />
             {postError.title && (
               <p className="text-xs text-rose-600">Please enter post title </p>
@@ -135,28 +150,29 @@ export default function Form({ postId }: { postId: string }) {
               placeholder="Enter a description"
               className="resize-none bg-inherit outline-none"
               value={editedPost.description}
-              onChange={(e) =>
-                setEditedPost({ ...editedPost, description: e.target.value })
-              }
+              onChange={handleChange}
             ></textarea>
             {postError.description && (
               <p className="text-xs text-rose-600">
-                Please enter post description{" "}
+                Please enter post description
               </p>
             )}
           </div>
-          <input
-            type="text"
-            name="link"
-            placeholder="Media url"
-            className="rounded-md bg-inherit bg-neutral-800 p-2 outline-none"
-            value={editedPost.link}
-            onChange={(e) =>
-              setEditedPost({ ...editedPost, link: e.target.value })
-            }
-          />
+          <div className="flex flex-col gap-1">
+            <input
+              type="text"
+              name="link"
+              placeholder="Media url"
+              className="rounded-md bg-inherit bg-neutral-800 p-2 outline-none"
+              value={editedPost.link}
+              onChange={handleChange}
+            />
+            {postError.link && (
+              <p className="text-xs text-rose-600">Invalid media url</p>
+            )}
+          </div>
           <button className="flex h-12 w-1/4 items-center justify-center gap-1 self-end rounded-3xl bg-rose-600 font-semibold text-amber-200 hover:bg-rose-500 hover:text-black">
-            Edit
+            Post
           </button>
         </form>
       )}

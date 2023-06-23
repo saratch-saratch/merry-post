@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 
+//here
+//check again
+
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
     const session = await getServerSession(authOptions);

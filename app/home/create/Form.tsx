@@ -60,7 +60,7 @@ export default function Form() {
     }
   };
 
-  const handleCreate = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     let newPost = { ...post };
     let newError = { ...error };
@@ -72,7 +72,8 @@ export default function Form() {
     if (
       status === "authenticated" &&
       !newError.title &&
-      !newError.description
+      !newError.description &&
+      !newError.link
     ) {
       try {
         const response = await fetch("/api/posts", {
@@ -97,7 +98,7 @@ export default function Form() {
 
   return (
     <form
-      onSubmit={handleCreate}
+      onSubmit={handleSubmit}
       className="flex w-full flex-col gap-4 rounded-md bg-neutral-700 p-4"
     >
       <div className="flex flex-col gap-1">
