@@ -6,10 +6,10 @@ import { RiSwordFill } from "react-icons/ri";
 import { useState, FormEvent, useEffect, ChangeEvent } from "react";
 import { useSession, signIn } from "next-auth/react";
 
-export default function Login() {
+export default function SignIn() {
   const router = useRouter();
   const [user, setUser] = useState({ username: "", password: "" });
-  const [error, setError] = useState({ login: false, input: false });
+  const [error, setError] = useState({ signIn: false, input: false });
   const { status } = useSession();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -17,25 +17,25 @@ export default function Login() {
     setUser((user) => ({ ...user, [name]: value }));
   };
 
-  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     let validationError = false;
 
     if (user.username === "" || user.password === "") {
       validationError = true;
-      setError({ login: false, input: true });
+      setError({ signIn: false, input: true });
     }
 
     if (!validationError) {
-      const result = await signIn("credentials", {
+      const response = await signIn("credentials", {
         username: user.username,
         password: user.password,
-        callbackUrl: "/home",
+        redirect: false,
       });
-
-      if (result?.error) {
-        setError({ login: true, input: false });
-        return;
+      if (response?.error) {
+        setError({ signIn: true, input: false });
+      } else {
+        router.push("/home");
       }
     }
   };
@@ -57,24 +57,24 @@ export default function Login() {
             <RiSwordFill className="h-7 w-7 fill-stone-50" />
           </div>
           <form
-            onSubmit={handleLogin}
-            className="flex w-60 flex-col items-center gap-4"
+            onSubmit={handleSubmit}
+            className="flex w-full flex-col items-center gap-4"
           >
             {error.input && (
               <p className="text-sm text-rose-600">
-                Username and password are required{" "}
+                {"(┛◉Д◉)┛彡 Username and password are required"}
               </p>
             )}
-            {error.login && (
+            {error.signIn && (
               <p className="text-sm text-rose-600">
-                Invalid username or password
+                {"(┛◉Д◉)┛彡 Invalid username or password"}
               </p>
             )}
             <input
               type="text"
               name="username"
               placeholder="Username"
-              className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
+              className="w-60 flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
               value={user.username}
               onChange={handleChange}
             />
@@ -84,14 +84,14 @@ export default function Login() {
               placeholder="Password"
               value={user.password}
               onChange={handleChange}
-              className="w-full flex-shrink bg-stone-50 px-4 text-inherit outline-none"
+              className="w-60 flex-shrink bg-stone-50 px-4 text-inherit outline-none"
             />
             <button className="w-fit hover:text-stone-50">
               {"(ﾉ≧∇≦)ﾉ ﾐ Sign in"}
             </button>
           </form>
           <Link
-            href="/login/register"
+            href="/signin/signup"
             className="absolute bottom-4 right-4 text-stone-50 hover:text-amber-200"
           >
             {" ☆ﾟ°˖* ᕕ( ᐛ )ᕗ Sign up"}

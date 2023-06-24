@@ -2,16 +2,22 @@
 
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import { FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-//here
-
-export default function Register() {
+export default function SignUp() {
   const { data: jobs, error, isLoading } = useSWR("/api/jobs", fetcher);
   const router = useRouter();
+  const [user, setUser] = useState({
+    username: "",
+    displayName: "",
+    jobId: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [userError, setUserError] = useState({
     username: false,
     displayName: false,
@@ -20,87 +26,65 @@ export default function Register() {
     password: false,
     confirmPassword: false,
   });
-  const [userSubmit, setUserSubmit] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState("");
   const { status } = useSession();
+
   useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/home");
-    }
+    if (status === "authenticated") router.push("/home");
   }, [status]);
+
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = event.currentTarget;
+    setUser((user) => ({
+      ...user,
+      [name]: value,
+    }));
+  };
+
+  const validateUser = () => {
+    let isValid = true;
+
+    const validatedUserError = {
+      username: user.username.trim() === "",
+      displayName: user.displayName.trim() === "",
+      jobId: user.jobId === "",
+      email: !/^\S+@\S+\.\S+$/.test(user.email),
+      password: user.password.trim() === "",
+      confirmPassword:
+        user.password.trim() === "" || user.password !== user.confirmPassword,
+    };
+
+    for (const key in validatedUserError) {
+      if (validatedUserError[key as keyof typeof validatedUserError]) {
+        isValid = false;
+        break;
+      }
+    }
+
+    setUserError(validatedUserError);
+    return isValid;
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newUser = {
-      username: event.currentTarget.username.value,
-      displayName: event.currentTarget.displayName.value,
-      email: event.currentTarget.email.value,
-      password: event.currentTarget.password.value,
-      confirmPassword: event.currentTarget.confirmPassword.value,
-      jobId: event.currentTarget.jobId.value,
-    };
 
-    //validation
-    const userErrorUpdates: { [key: string]: boolean } = {};
-    Object.entries(newUser).forEach(([key, value]) => {
-      if (value.length === 0) {
-        userErrorUpdates[key] = true;
-      } else {
-        userErrorUpdates[key] = false;
-      }
-    });
+    if (!validateUser()) return;
 
-    const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(newUser.email)) {
-      userErrorUpdates.email = true;
-    } else userErrorUpdates.email = false;
-
-    if (
-      newUser.password !== newUser.confirmPassword ||
-      newUser.password === ""
-    ) {
-      userErrorUpdates.password = true;
-      userErrorUpdates.confirmPassword = true;
-    } else {
-      userErrorUpdates.password = false;
-      userErrorUpdates.confirmPassword = false;
-    }
-
-    //still need to check if username is taken
-
-    setUserError((prevUserError) => ({
-      ...prevUserError,
-      ...userErrorUpdates,
-    }));
-    if (Object.values(userErrorUpdates).some((value) => value === true)) {
-      return;
-    }
-
-    //send POST request to create new user
     try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/users/user",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: newUser.username,
-            displayName: newUser.displayName,
-            email: newUser.email,
-            password: newUser.password,
-            jobId: newUser.jobId,
-          }),
-        }
-      );
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user),
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.log(errorData);
-      } else {
-        setUserSubmit(true);
-        setTimeout(() => router.push("/login"), 2000);
-      }
+      if (response.ok) {
+        setSubmitStatus("ok");
+        setTimeout(() => router.push("/signin"), 2000);
+      } else setSubmitStatus("error");
     } catch (error) {
-      console.log(error);
+      setSubmitStatus("error");
     }
   };
 
@@ -120,6 +104,8 @@ export default function Register() {
                   type="text"
                   placeholder="Username"
                   name="username"
+                  value={user.username}
+                  onChange={handleChange}
                   className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
                 />
                 {userError.username && (
@@ -131,6 +117,8 @@ export default function Register() {
                   type="text"
                   placeholder="Email"
                   name="email"
+                  value={user.email}
+                  onChange={handleChange}
                   className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
                 />
                 {userError.email && (
@@ -146,6 +134,8 @@ export default function Register() {
                   type="text"
                   placeholder="Display name"
                   name="displayName"
+                  value={user.displayName}
+                  onChange={handleChange}
                   className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
                 />
                 {userError.displayName && (
@@ -155,6 +145,7 @@ export default function Register() {
               <div className="flex w-60 items-center gap-2">
                 <select
                   name="jobId"
+                  onChange={handleChange}
                   className="h-6 w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
                 >
                   <option value="">Choose your job</option>
@@ -177,6 +168,8 @@ export default function Register() {
                   type="password"
                   placeholder="Password"
                   name="password"
+                  value={user.password}
+                  onChange={handleChange}
                   className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
                 />
                 {userError.password && (
@@ -188,6 +181,8 @@ export default function Register() {
                   type="password"
                   placeholder="Confirm password"
                   name="confirmPassword"
+                  value={user.confirmPassword}
+                  onChange={handleChange}
                   className="w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
                 />
                 {userError.confirmPassword && (
@@ -196,20 +191,22 @@ export default function Register() {
               </div>
             </div>
 
-            {/* submit button */}
             <button className="w-fit hover:text-stone-50">
               {"(ﾉ≧∇≦)ﾉ ﾐ Sign up"}
             </button>
-
-            {/* completion message */}
-            {userSubmit && (
+            {submitStatus === "ok" && (
               <p className="absolute bottom-4 right-4 text-teal-300">
                 {"(｢• ω •)｢ Done!"}
               </p>
             )}
+            {submitStatus === "error" && (
+              <p className="absolute bottom-4 right-4 text-rose-600">
+                {"(┛◉Д◉)┛彡 Error!"}
+              </p>
+            )}
           </form>
           <Link
-            href="/login"
+            href="/signin"
             className="absolute bottom-4 left-4 text-stone-50 hover:text-amber-200"
           >
             {" ヽ(。_°)ノ Cancel"}
