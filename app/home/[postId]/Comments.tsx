@@ -11,18 +11,22 @@ interface CommentProps {
   color: string;
   message: string;
   createdAt: string;
+  isOwner: boolean;
 }
 
-interface PostProps {
+export default function Comments({
+  postId,
+  status,
+}: {
   postId: string;
-  userId: string;
-}
-
-export default function Comments({ postId, userId }: PostProps) {
+  status: string;
+}) {
   const { comments, isError, isLoading, mutateComments } = useComments(postId);
 
   const deletePost = async (commentId: string) => {
     try {
+      if (status !== "authenticated") return;
+
       const response = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/comments/" + commentId,
         { method: "DELETE" }
@@ -59,7 +63,7 @@ export default function Comments({ postId, userId }: PostProps) {
               <p className="text-xs">{moment(comment.createdAt).fromNow()}</p>
             </div>
           </div>
-          {userId === comment.userId && (
+          {comment.isOwner && (
             <div className="invisible flex flex-col gap-1 group-hover:visible">
               <button onClick={() => deletePost(comment.id)}>
                 <RiDeleteBinFill className="h-6 w-6 fill-rose-400 hover:fill-red-600" />
