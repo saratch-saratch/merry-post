@@ -49,18 +49,19 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
-  const userId = session?.user.id;
   const body = await request.json();
   const { title, description, link } = body;
   let validatedUrl = "";
 
   try {
-    if (!userId) {
+    if (!session) {
       return NextResponse.json(
         { error: "You are not logged in" },
         { status: 401 }
       );
     }
+
+    const userId = session.user.id;
 
     if (!title || !description || title === "" || description === "") {
       return NextResponse.json(

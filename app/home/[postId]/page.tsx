@@ -9,6 +9,8 @@ import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { useSession } from "next-auth/react";
 
+//here
+
 export default function PostPage({ params }: { params: { postId: string } }) {
   const { postId } = params;
   const {

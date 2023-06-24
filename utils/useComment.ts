@@ -11,6 +11,6 @@ export function useComments(postId: string) {
     comments: data,
     isLoading: !error && !data,
     isError: error,
-    mutate,
+    mutateComments: mutate,
   };
 }
