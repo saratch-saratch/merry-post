@@ -27,9 +27,15 @@ export async function POST(req: NextRequest) {
       displayName.trim() === "" ||
       password.trim() === "" ||
       confirmPassword.trim() === "" ||
-      confirmPassword !== password ||
-      jobId.trim() === ""
+      confirmPassword !== password
     ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (isNaN(Number(jobId))) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
