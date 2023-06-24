@@ -2,8 +2,6 @@ import { RiCloseCircleFill, RiChat3Line } from "react-icons/ri";
 import Link from "next/link";
 import Content from "./Content";
 
-//here
-
 export default async function Settings() {
   return (
     <main className="ml-2 flex h-screen w-full min-w-[32rem] flex-col overflow-auto rounded-lg bg-neutral-800">
@@ -18,9 +16,7 @@ export default async function Settings() {
           <RiCloseCircleFill className="h-6 w-6 rotate-12 fill-amber-200 hover:fill-rose-600" />
         </Link>
       </header>
-      <section className="flex h-full flex-col gap-4 overflow-x-hidden overflow-y-scroll p-4">
-        <Content />
-      </section>
+      <Content />
     </main>
   );
 }

@@ -34,12 +34,12 @@ export default async function Home() {
           </div>
           <Link
             href="/home/create"
-            className="flex h-12 w-1/4 items-center justify-center gap-1 rounded-3xl bg-rose-600 hover:bg-rose-500 "
+            className="group flex h-12 w-1/4 items-center justify-center gap-1 rounded-3xl bg-rose-600 hover:bg-rose-500 "
           >
-            <p className="font-semibold text-amber-200 hover:text-black">
+            <p className="font-semibold text-amber-200 group-hover:text-black">
               New Post
             </p>
-            <RiChat3Line className="h-6 w-6 fill-amber-200 hover:fill-black" />
+            <RiChat3Line className="h-6 w-6 fill-amber-200 group-hover:fill-black" />
           </Link>
         </div>
         <div className=" h-1 w-full rounded-lg bg-gradient-to-r from-amber-200 via-neutral-700 to-neutral-800" />

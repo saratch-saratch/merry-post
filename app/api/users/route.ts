@@ -1,36 +1,84 @@
-import { getErrorResponse } from "@/utils/helpers";
 import prisma from "@/prisma/prisma";
-import { RegisterUserInput, RegisterUserSchema } from "@/utils/userSchema";
 import { NextRequest, NextResponse } from "next/server";
-import { ZodError } from "zod";
-
-//here need rewrite
 
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json()) as RegisterUserInput;
-    const data = RegisterUserSchema.parse(body);
+    const data = await req.json();
+    const { username, email, displayName, password, confirmPassword, jobId } =
+      data;
+
+    if (
+      !username ||
+      !email ||
+      !displayName ||
+      !password ||
+      !confirmPassword ||
+      !jobId
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (
+      username.trim() === "" ||
+      email === !/^\S+@\S+\.\S+$/.test(email) ||
+      displayName.trim() === "" ||
+      password.trim() === "" ||
+      confirmPassword.trim() === "" ||
+      confirmPassword !== password
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (isNaN(Number(jobId))) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { username: username },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "Username already exists" },
+        { status: 400 }
+      );
+    }
+
+    const existingEmail = await prisma.user.findUnique({
+      where: { email: email },
+    });
+
+    if (existingEmail) {
+      return NextResponse.json(
+        { error: "Email already exists" },
+        { status: 400 }
+      );
+    }
 
     const user = await prisma.user.create({
       data: {
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        displayName: data.displayName,
-        job: { connect: { id: Number(data.jobId) } },
+        username: username,
+        email: email,
+        password: password,
+        displayName: displayName,
+        job: { connect: { id: Number(jobId) } },
       },
     });
 
     return NextResponse.json(user, { status: 201 });
-  } catch (error: any) {
-    if (error instanceof ZodError) {
-      return getErrorResponse(400, "failed validations", error);
-    }
-
-    if (error.code === "P2002") {
-      return getErrorResponse(409, "username or email already exists");
-    }
-
-    return getErrorResponse(500, error.message);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to create user" },
+      { status: 500 }
+    );
   }
 }

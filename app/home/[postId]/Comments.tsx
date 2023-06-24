@@ -2,10 +2,7 @@
 
 import { RiDeleteBinFill } from "react-icons/ri";
 import moment from "moment";
-import useSWR from "swr";
-import fetcher from "@/utils/fetcher";
-
-let mutateComments: () => Promise<any>;
+import { useComments } from "@/utils/useComment";
 
 interface CommentProps {
   id: string;
@@ -14,41 +11,35 @@ interface CommentProps {
   color: string;
   message: string;
   createdAt: string;
+  isOwner: boolean;
 }
 
-interface PostProps {
+export default function Comments({
+  postId,
+  status,
+}: {
   postId: string;
-  userId: string;
-}
+  status: string;
+}) {
+  const { comments, isError, isLoading, mutateComments } = useComments(postId);
 
-export default function Comments({ postId, userId }: PostProps) {
-  const {
-    data: comments,
-    error,
-    isLoading,
-    mutate,
-  } = useSWR("/api/posts/" + postId + "/comments", fetcher);
-
-  mutateComments = mutate;
-
-  const deletePost = async (commentId: string, commentUserId: string) => {
-    if (userId !== commentUserId) return;
-
+  const deletePost = async (commentId: string) => {
     try {
+      if (status !== "authenticated") return;
+
       const response = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/comments/" + commentId,
         { method: "DELETE" }
       );
-      if (!response.ok) {
-        return;
-      }
+      if (!response.ok) return;
+
       mutateComments();
     } catch (error) {
       return;
     }
   };
 
-  if (error || isLoading) return null;
+  if (isError || isLoading) return null;
 
   return (
     <section className="flex flex-col gap-4">
@@ -72,9 +63,9 @@ export default function Comments({ postId, userId }: PostProps) {
               <p className="text-xs">{moment(comment.createdAt).fromNow()}</p>
             </div>
           </div>
-          {userId === comment.userId && (
+          {comment.isOwner && (
             <div className="invisible flex flex-col gap-1 group-hover:visible">
-              <button onClick={() => deletePost(comment.id, comment.userId)}>
+              <button onClick={() => deletePost(comment.id)}>
                 <RiDeleteBinFill className="h-6 w-6 fill-rose-400 hover:fill-red-600" />
               </button>
             </div>
@@ -84,5 +75,3 @@ export default function Comments({ postId, userId }: PostProps) {
     </section>
   );
 }
-
-export { mutateComments };
