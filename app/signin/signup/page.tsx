@@ -29,10 +29,6 @@ export default function SignUp() {
   const [submitStatus, setSubmitStatus] = useState("");
   const { status } = useSession();
 
-  useEffect(() => {
-    if (status === "authenticated") router.push("/home");
-  }, [status]);
-
   const handleChange = (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -87,6 +83,10 @@ export default function SignUp() {
       setSubmitStatus("error");
     }
   };
+
+  useEffect(() => {
+    if (status === "authenticated") router.push("/home");
+  }, [status]);
 
   if (error || isLoading) return null;
   return (

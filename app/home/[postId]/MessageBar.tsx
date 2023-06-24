@@ -1,12 +1,13 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { mutateComments } from "./Comments";
+import { useComments } from "@/utils/useComment";
 import { useSession } from "next-auth/react";
 
 export default function MessageBar({ postId }: { postId: string }) {
   const { status } = useSession();
   const [message, setMessage] = useState("");
+  const { mutate: mutateComments } = useComments(postId);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

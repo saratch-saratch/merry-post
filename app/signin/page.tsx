@@ -8,9 +8,9 @@ import { useSession, signIn } from "next-auth/react";
 
 export default function SignIn() {
   const router = useRouter();
-  const [user, setUser] = useState({ username: "", password: "" });
-  const [error, setError] = useState({ signIn: false, input: false });
   const { status } = useSession();
+  const [user, setUser] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.currentTarget;
@@ -19,31 +19,24 @@ export default function SignIn() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    let validationError = false;
 
     if (user.username === "" || user.password === "") {
-      validationError = true;
-      setError({ signIn: false, input: true });
+      setError("validation");
+      return;
     }
 
-    if (!validationError) {
+    {
       const response = await signIn("credentials", {
-        username: user.username,
-        password: user.password,
+        ...user,
         redirect: false,
       });
-      if (response?.error) {
-        setError({ signIn: true, input: false });
-      } else {
-        router.push("/home");
-      }
+      if (response?.error) setError("submit");
+      else router.push("/home");
     }
   };
 
   useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/home");
-    }
+    if (status === "authenticated") router.push("/home");
   }, [status]);
 
   return (
@@ -60,12 +53,12 @@ export default function SignIn() {
             onSubmit={handleSubmit}
             className="flex w-full flex-col items-center gap-4"
           >
-            {error.input && (
+            {error === "validation" && (
               <p className="text-sm text-rose-600">
                 {"(┛◉Д◉)┛彡 Username and password are required"}
               </p>
             )}
-            {error.signIn && (
+            {error === "submit" && (
               <p className="text-sm text-rose-600">
                 {"(┛◉Д◉)┛彡 Invalid username or password"}
               </p>

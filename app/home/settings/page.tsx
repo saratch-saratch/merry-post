@@ -18,9 +18,7 @@ export default async function Settings() {
           <RiCloseCircleFill className="h-6 w-6 rotate-12 fill-amber-200 hover:fill-rose-600" />
         </Link>
       </header>
-      <section className="flex h-full flex-col gap-4 overflow-x-hidden overflow-y-scroll p-4">
-        <Content />
-      </section>
+      <Content />
     </main>
   );
 }
