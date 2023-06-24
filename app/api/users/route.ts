@@ -1,12 +1,62 @@
 import prisma from "@/prisma/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-//here need rewrite
-
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { username, email, password, displayName, jobId } = body;
+    const data = await req.json();
+    const { username, email, displayName, password, confirmPassword, jobId } =
+      data;
+
+    if (
+      !username ||
+      !email ||
+      !displayName ||
+      !password ||
+      !confirmPassword ||
+      !jobId
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (
+      username.trim() === "" ||
+      email === !/^\S+@\S+\.\S+$/.test(email) ||
+      displayName.trim() === "" ||
+      password.trim() === "" ||
+      confirmPassword.trim() === "" ||
+      confirmPassword !== password ||
+      jobId.trim() === ""
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { username: username },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "Username already exists" },
+        { status: 400 }
+      );
+    }
+
+    const existingEmail = await prisma.user.findUnique({
+      where: { email: email },
+    });
+
+    if (existingEmail) {
+      return NextResponse.json(
+        { error: "Email already exists" },
+        { status: 400 }
+      );
+    }
 
     const user = await prisma.user.create({
       data: {

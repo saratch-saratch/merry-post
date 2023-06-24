@@ -192,6 +192,7 @@ export default function Content() {
         </div>
         <div className="flex h-full w-1/2 flex-col justify-between">
           <button
+            type="button"
             onClick={async () => {
               await signOut({ callbackUrl: "/" });
             }}
