@@ -55,7 +55,7 @@ export async function PUT(req: Request) {
     const data = await req.json();
     const { displayName, jobId, email, newPassword, password } = data;
 
-    if (!displayName || !jobId || !email || !newPassword || !password) {
+    if (!displayName || !jobId || !email || !password) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }

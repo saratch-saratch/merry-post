@@ -48,11 +48,3 @@ model Comment {
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   post        Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
-
-// Create the postgresql database
-// Create .env file with DATABASE_URL
-// Run the following commands on terminal: 
-// npx prisma migrate
-// npx prisma migrate dev
-// npx prisma generate
-// npx prisma db seed
