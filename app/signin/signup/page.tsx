@@ -83,7 +83,9 @@ export default function SignUp() {
   };
 
   useEffect(() => {
-    if (status === "authenticated") router.push("/home");
+    if (status === "authenticated") {
+      router.push("/home");
+    }
   }, [status]);
 
   if (error || isLoading) return null;

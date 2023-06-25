@@ -98,12 +98,6 @@ export default function Content() {
   };
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/signin");
-    }
-  }, [status]);
-
-  useEffect(() => {
     if (user) {
       setEditedUser((editedUser) => ({
         ...editedUser,

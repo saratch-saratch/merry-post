@@ -36,7 +36,9 @@ export default function SignIn() {
   };
 
   useEffect(() => {
-    if (status === "authenticated") router.push("/home");
+    if (status === "authenticated") {
+      router.push("/home");
+    }
   }, [status]);
 
   return (

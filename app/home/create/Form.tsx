@@ -31,10 +31,7 @@ export default function Form() {
     if (post.url !== "") {
       try {
         const url = new URL(post.url);
-
         if (url.hostname !== "www.youtube.com") {
-          isUrlValid = true;
-        } else {
           isUrlValid = false;
         }
       } catch (error) {

@@ -3,17 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, FormEvent, ChangeEvent } from "react";
 import { useFeed } from "@/utils/useFeed";
-import useSWR from "swr";
-import fetcher from "@/utils/fetcher";
+import { usePost } from "@/utils/usePost";
 import { useSession } from "next-auth/react";
 
 export default function Form({ postId }: { postId: string }) {
-  const {
-    data: post,
-    error,
-    isLoading,
-  } = useSWR("/api/posts/" + postId, fetcher);
-
+  const { post, isError, isLoading, mutatePost } = usePost(postId);
   const { mutateFeed } = useFeed();
   const { status } = useSession();
   const router = useRouter();
@@ -40,13 +34,10 @@ export default function Form({ postId }: { postId: string }) {
     let isValid = true;
     let isUrlValid = true;
 
-    if (post.url !== "") {
+    if (editedPost.url !== "") {
       try {
-        const url = new URL(post.url);
-
+        const url = new URL(editedPost.url);
         if (url.hostname !== "www.youtube.com") {
-          isUrlValid = true;
-        } else {
           isUrlValid = false;
         }
       } catch (error) {
@@ -55,8 +46,8 @@ export default function Form({ postId }: { postId: string }) {
     }
 
     const validatedUserError = {
-      title: post.title.trim() === "",
-      description: post.description.trim() === "",
+      title: editedPost.title.trim() === "",
+      description: editedPost.description.trim() === "",
       url: !isUrlValid,
     };
 
@@ -88,17 +79,12 @@ export default function Form({ postId }: { postId: string }) {
       }
 
       mutateFeed();
+      mutatePost();
       router.push("/home/" + postId);
     } catch (error) {
       return console.log(error);
     }
   };
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/signin");
-    }
-  }, [status]);
 
   useEffect(() => {
     if (post) {
@@ -114,7 +100,7 @@ export default function Form({ postId }: { postId: string }) {
     }
   }, [post]);
 
-  if (error || isLoading) return null;
+  if (isError || isLoading) return null;
 
   return (
     <>

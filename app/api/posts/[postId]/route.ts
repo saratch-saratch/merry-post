@@ -59,16 +59,51 @@ export async function GET(
   }
 }
 
-//here
-
 export async function PUT(
   req: Request,
   { params }: { params: { postId: string } }
 ) {
-  const body = await req.json();
-  const { title, description, url } = body;
-  let checkedLink = "";
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json(
+        { error: "You are not logged in" },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: params.postId,
+      },
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    if (post.userId !== userId) {
+      return NextResponse.json(
+        { error: "You are not authorized to edit this post" },
+        { status: 403 }
+      );
+    }
+
+    const body = await req.json();
+    const { title, description, url } = body;
+
     if (!title || !description) {
       return NextResponse.json(
         { error: "Title and description are required" },
@@ -76,31 +111,38 @@ export async function PUT(
       );
     }
 
-    if (url !== "") {
-      const validatedUrl = new URL(url);
-
-      if (!validatedUrl.hostname.includes("youtube.com")) {
+    let validatedUrl = "";
+    if (url && url !== "") {
+      try {
+        const newUrl = new URL(url);
+        if (!newUrl.hostname.includes("youtube.com")) {
+          return NextResponse.json(
+            { error: "Url is not valid" },
+            { status: 400 }
+          );
+        }
+        validatedUrl = url;
+      } catch (err) {
         return NextResponse.json(
-          { error: "Link is not a valid url" },
+          { error: "Url is not valid" },
           { status: 400 }
         );
       }
-      checkedLink = url;
     }
 
-    const post = await prisma.post.update({
+    const editedPost = await prisma.post.update({
       where: {
         id: params.postId,
       },
       data: {
         title,
         description,
-        url: checkedLink,
+        url: validatedUrl,
         lastModified: new Date(),
       },
     });
 
-    return NextResponse.json(post, { status: 200 });
+    return NextResponse.json(editedPost, { status: 200 });
   } catch (err) {
     return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
