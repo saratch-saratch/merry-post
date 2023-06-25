@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
 
 //here
-//need protection
 
 export async function GET(
   request: Request,
@@ -36,13 +35,15 @@ export async function GET(
   }
 }
 
+//here
+
 export async function PUT(
   request: Request,
   { params }: { params: { postId: string } }
 ) {
   const body = await request.json();
-  const { title, description, link } = body;
-  let checkedLink: string;
+  const { title, description, url } = body;
+  let checkedLink = "";
   try {
     if (!title || !description) {
       return NextResponse.json(
@@ -51,17 +52,15 @@ export async function PUT(
       );
     }
 
-    if (!link) {
-      checkedLink = "";
-    } else {
-      const url = new URL(link);
-      if (!url.hostname.includes("youtube.com")) {
+    if (url !== "") {
+      const validatedUrl = new URL(url);
+      if (!validatedUrl.hostname.includes("youtube.com")) {
         return NextResponse.json(
           { error: "Link is not a valid url" },
           { status: 400 }
         );
       }
-      checkedLink = link;
+      checkedLink = url;
     }
 
     const post = await prisma.post.update({
@@ -71,7 +70,7 @@ export async function PUT(
       data: {
         title,
         description,
-        link: checkedLink,
+        url: checkedLink,
         lastModified: new Date(),
       },
     });
@@ -81,6 +80,8 @@ export async function PUT(
     return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }
 }
+
+//here
 
 export async function DELETE(
   request: Request,

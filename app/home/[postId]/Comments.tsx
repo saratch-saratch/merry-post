@@ -23,9 +23,9 @@ export default function Comments({
 }) {
   const { comments, isError, isLoading, mutateComments } = useComments(postId);
 
-  const deletePost = async (commentId: string) => {
+  const deletePost = async (commentId: string, isOwner: boolean) => {
     try {
-      if (status !== "authenticated") return;
+      if (status !== "authenticated" || !isOwner) return;
 
       const response = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/comments/" + commentId,
@@ -65,7 +65,7 @@ export default function Comments({
           </div>
           {comment.isOwner && (
             <div className="invisible flex flex-col gap-1 group-hover:visible">
-              <button onClick={() => deletePost(comment.id)}>
+              <button onClick={() => deletePost(comment.id, comment.isOwner)}>
                 <RiDeleteBinFill className="h-6 w-6 fill-rose-400 hover:fill-red-600" />
               </button>
             </div>

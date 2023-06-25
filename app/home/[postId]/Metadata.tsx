@@ -10,13 +10,13 @@ interface YoutubeMetaProps {
   thumbnail: string;
 }
 
-export default function Metadata({ link }: { link: string }) {
+export default function Metadata({ url }: { url: string }) {
   const [youtubeMeta, setYoutubeMeta] = useState<YoutubeMetaProps | null>(null);
 
   useEffect(() => {
     const fetchYoutubeMeta = async () => {
       try {
-        const res = await fetch("https://youtube.com/oembed?url=" + link);
+        const res = await fetch("https://youtube.com/oembed?url=" + url);
         const data = await res.json();
         const meta: YoutubeMetaProps = {
           provider: data.provider_name,
@@ -31,12 +31,12 @@ export default function Metadata({ link }: { link: string }) {
     };
 
     fetchYoutubeMeta();
-  }, [link]);
+  }, [url]);
 
   if (!youtubeMeta) return null;
 
   return (
-    <Link href={link}>
+    <Link href={url}>
       <div className="flex w-4/5 flex-col gap-2 rounded-md bg-neutral-900 p-2">
         <div>
           <p className="text-xs">{youtubeMeta?.provider}</p>

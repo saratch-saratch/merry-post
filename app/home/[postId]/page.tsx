@@ -50,7 +50,7 @@ export default function PostPage({ params }: { params: { postId: string } }) {
             </Link>
           </header>
           <section className="flex h-full flex-col gap-4 overflow-x-hidden overflow-y-scroll p-4">
-            <Post postId={postId} post={post} userId={userId} />
+            <Post post={post} status={status} />
             <div className="h-1 w-full shrink-0 rounded-lg bg-gradient-to-r from-neutral-800 via-neutral-700 to-amber-200" />
             <Comments postId={postId} status={status} />
           </section>

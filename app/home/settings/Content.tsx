@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, FormEvent, ChangeEvent, useEffect } from "react";
-import { mutateFeed } from "@/app/home/Feed";
+import { useFeed } from "@/utils/useFeed";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { signOut } from "next-auth/react";
@@ -24,6 +24,7 @@ export default function Content() {
 
   const router = useRouter();
   const { status } = useSession();
+  const { mutateFeed } = useFeed();
 
   const [editedUser, setEditedUser] = useState({
     displayName: "",

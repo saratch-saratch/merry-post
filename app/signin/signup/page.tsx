@@ -65,13 +65,11 @@ export default function SignUp() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     if (!validateUser()) return;
 
     try {
       const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/users", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
       });
 

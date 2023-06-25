@@ -30,6 +30,7 @@ export default function SignIn() {
         ...user,
         redirect: false,
       });
+      console.log(response);
       if (response?.error) setError("submit");
       else router.push("/home");
     }

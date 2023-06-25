@@ -5,7 +5,7 @@ export function useFeed() {
   const { data, error, mutate } = useSWR("/api/posts", fetcher);
 
   return {
-    comments: data,
+    posts: data,
     isLoading: !error && !data,
     isError: error,
     mutateFeed: mutate,

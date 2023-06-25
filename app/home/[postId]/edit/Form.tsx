@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, FormEvent, ChangeEvent } from "react";
-import { mutateFeed } from "@/app/home/Feed";
+import { useFeed } from "@/utils/useFeed";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { useSession } from "next-auth/react";
@@ -16,6 +16,7 @@ export default function Form({ postId }: { postId: string }) {
     isLoading,
   } = useSWR("/api/posts/" + postId, fetcher);
 
+  const { mutateFeed } = useFeed();
   const { data: session } = useSession();
   const userId = session?.user.id;
 
@@ -23,12 +24,12 @@ export default function Form({ postId }: { postId: string }) {
   const [editedPost, setEditedPost] = useState({
     title: "",
     description: "",
-    link: "",
+    url: "",
   });
   const [postError, setPostError] = useState({
     title: false,
     description: false,
-    link: false,
+    url: false,
   });
 
   const handleChange = (
@@ -42,12 +43,12 @@ export default function Form({ postId }: { postId: string }) {
     newEditedPost: {
       title: string;
       description: string;
-      link: string;
+      url: string;
     },
     newError: {
       title: boolean;
       description: boolean;
-      link: boolean;
+      url: boolean;
     }
   ) => {
     if (newEditedPost.title === "") {
@@ -62,14 +63,14 @@ export default function Form({ postId }: { postId: string }) {
       newError.description = false;
     }
 
-    if (newEditedPost.link !== "") {
+    if (newEditedPost.url !== "") {
       try {
-        const url = new URL(post.link);
+        const url = new URL(post.url);
         if (url.hostname !== "www.youtube.com") {
-          newEditedPost.link = "";
+          newEditedPost.url = "";
         }
       } catch (error) {
-        newEditedPost.link = "";
+        newEditedPost.url = "";
       }
     }
   };
@@ -86,7 +87,7 @@ export default function Form({ postId }: { postId: string }) {
       userId === post.userId &&
       !newError.title &&
       !newError.description &&
-      !newError.link
+      !newError.url
     ) {
       try {
         const response = await fetch("/api/posts/" + postId, {
@@ -117,7 +118,7 @@ export default function Form({ postId }: { postId: string }) {
       setEditedPost({
         title: post.title,
         description: post.description,
-        link: post.link,
+        url: post.url,
       });
     }
   }, [post]);
@@ -163,13 +164,13 @@ export default function Form({ postId }: { postId: string }) {
           <div className="flex flex-col gap-1">
             <input
               type="text"
-              name="link"
+              name="url"
               placeholder="Media url"
               className="rounded-md bg-inherit bg-neutral-800 p-2 outline-none"
-              value={editedPost.link}
+              value={editedPost.url}
               onChange={handleChange}
             />
-            {postError.link && (
+            {postError.url && (
               <p className="text-xs text-rose-600">Invalid media url</p>
             )}
           </div>
