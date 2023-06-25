@@ -79,7 +79,9 @@ export default function Feed() {
                     )}
                   </div>
                   <div className="flex">
-                    <p style={{ color: post.color }}>{post.user}</p>
+                    <p className="shrink-0" style={{ color: post.color }}>
+                      {post.user}
+                    </p>
                     <p className="truncate">: {post.description}</p>
                   </div>
                 </div>
