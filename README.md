@@ -14,130 +14,65 @@ Our main target users are groups of people who want to stay updated with the new
 
 ### Features
 
-- User login authentication
-- Dynamic forum feed and comments
-- Ability for users to create new topic with attachments
-- Ability for users to create new comments
-- Profile setting
+- User authentication and authorization.
+- Dynamic post feed and comments.
+- Dynamic menu for edit and delete post/comment.
+- Ability for users to create new topic with media url.
+- Post editing.
+- Comment message bar.
+- User profile settings.
 
 ### Tech Stack
 
-- Next.js (Fullstack)
+- TypeScript
+- Authoprefixer
+- React
+- Next.js
+- Post CSS
 - Talwind CSS
-- Javascript
-- PostgreSQL
-- Prisma ORM
-- Moment.js
+- Prettier
 - Google Fonts
 - React Icons
+- SWR
+- Moment.js
+- Prisma ORM
+- PostgreSQL
+- NextAuth.js
 
 ## Implementation
 
 ### Sitemap
 
-- Login page
-- Register page
-
-- Feed (Homepage)
-- Topic page (post, comments, comment input box)
-- Create topic page
-- Edit topic page
-
-- User profile page (Setting)
-
-On tablet and desktop, user can see 2 pages at the time.
-
-### Endpoints
-
-**GET /users**
-Lists all users.
-
-**POST /users**
-Add new user.
-
-**GET /users/:id**
-Lists single user.
-
-**PUT /users/:id**
-Edits user.
-
-**DELETE /users/:id**
-Deletes user.
-
-**GET /users/:id/topics**
-Lists all user's topics.
-
----
-
-**GET /topics**
-Lists all topics.
-
-**POST /topics**
-Add new topic.
-
-**GET /topics/:id**
-Lists single topic.
-
-**PUT /topics/:id**
-Edits topic.
-
-**DELETE /topics/:id**
-Deletes topic.
-
-**GET /topics/:id/comments**
-Lists all topic's comments.
-
----
-
-**GET /comments**
-Lists all comments.
-
-**POST /comments**
-Add new comment.
-
-**GET /comments/:id**
-Lists single comment.
-
-**PUT /comments/:id**
-Edits comment.
-
-**DELETE /comments/:id**
-Deletes comment.
+- Sign in page (/signin)
+- Sign up page (/signin/signup)
+- Homepage (/home)
+- Post page (/home/postId)
+- Edit post page (home/postId/edit)
+- Create new post page (/home/create)
+- Profile settings page (/home/settings)
 
 ### Auth
 
-- We will create our own JWT authentication for both cliend-side and server-side
-
-## Roadmap
-
-**Sprint 1**
-
-- Create front-end client
-- Set up database
-- Create back-end API
-- Create feed page
-- Create topic page
-
-**Sprint 2**
-
-- Create create topic page
-- Create edit topic page
-- Create comment section
-- Create user profile (setting) page
-
-**Sprint 3**
-
-- Create login page
-- Create register page
-- Create authentication
+This application was made with JWT authentication for both client-side and server-side using NextAuth.js custom provider.
 
 ## Nice-to-haves
 
-- Edit comment feature
-- Add user image feature
-- View count feature
-- Like feature, but using emoji instead
-- Search feature
-- Deploy to Vercel
-- TypeScript version
-- More options for theme and layout customizations
+- Edit user's comments feature.
+- Add user image.
+- View counter and like features.
+- Search for posts and comments feature.
+- Deploy an application to Vercel and Neon.
+- More options for theme and layout customizations.
+
+## Installation and initialization
+
+- Install Node.js and npm.
+- Clone the repository to application directory.
+- Run `npm install` to install all dependencies.
+- Create postgresql database.
+- Create .env file with same variable names with .env.sample.
+- Initialize Prisma by running the following commands on terminal:
+  - `npx prisma migrate`
+  - `npx prisma migrate dev`
+  - `npx prisma generate`
+  - `npx prisma db seed`
