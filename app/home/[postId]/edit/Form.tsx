@@ -2,33 +2,25 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, FormEvent, ChangeEvent } from "react";
-import { mutateFeed } from "@/app/home/Feed";
-import useSWR from "swr";
-import fetcher from "@/utils/fetcher";
+import { useFeed } from "@/utils/useFeed";
+import { usePost } from "@/utils/usePost";
 import { useSession } from "next-auth/react";
 
-//here
-
 export default function Form({ postId }: { postId: string }) {
-  const {
-    data: post,
-    error,
-    isLoading,
-  } = useSWR("/api/posts/" + postId, fetcher);
-
-  const { data: session } = useSession();
-  const userId = session?.user.id;
-
+  const { post, isError, isLoading, mutatePost } = usePost(postId);
+  const { mutateFeed } = useFeed();
+  const { status } = useSession();
   const router = useRouter();
+
   const [editedPost, setEditedPost] = useState({
     title: "",
     description: "",
-    link: "",
+    url: "",
   });
-  const [postError, setPostError] = useState({
+  const [editedError, setEditedError] = useState({
     title: false,
     description: false,
-    link: false,
+    url: false,
   });
 
   const handleChange = (
@@ -38,95 +30,81 @@ export default function Form({ postId }: { postId: string }) {
     setEditedPost((post) => ({ ...post, [name]: value }));
   };
 
-  const validatePost = (
-    newEditedPost: {
-      title: string;
-      description: string;
-      link: string;
-    },
-    newError: {
-      title: boolean;
-      description: boolean;
-      link: boolean;
-    }
-  ) => {
-    if (newEditedPost.title === "") {
-      newError.title = true;
-    } else {
-      newError.title = false;
-    }
+  const validatePost = () => {
+    let isValid = true;
+    let isUrlValid = true;
 
-    if (newEditedPost.description === "") {
-      newError.description = true;
-    } else {
-      newError.description = false;
-    }
-
-    if (newEditedPost.link !== "") {
+    if (editedPost.url !== "") {
       try {
-        const url = new URL(post.link);
+        const url = new URL(editedPost.url);
         if (url.hostname !== "www.youtube.com") {
-          newEditedPost.link = "";
+          isUrlValid = false;
         }
       } catch (error) {
-        newEditedPost.link = "";
+        isUrlValid = false;
       }
     }
+
+    const validatedUserError = {
+      title: editedPost.title.trim() === "",
+      description: editedPost.description.trim() === "",
+      url: !isUrlValid,
+    };
+
+    for (const key in validatedUserError) {
+      if (validatedUserError[key as keyof typeof validatedUserError]) {
+        isValid = false;
+        break;
+      }
+    }
+
+    setEditedError(validatedUserError);
+    return isValid;
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    let newEditedPost = { ...editedPost };
-    let newError = { ...postError };
+    if (status === "unauthenticated" || !post.isOwner || !validatePost())
+      return;
 
-    validatePost(newEditedPost, newError);
-    setPostError(newError);
-    setEditedPost(newEditedPost);
-    if (
-      userId === post.userId &&
-      !newError.title &&
-      !newError.description &&
-      !newError.link
-    ) {
-      try {
-        const response = await fetch("/api/posts/" + postId, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newEditedPost),
-        });
-        if (!response.ok) {
-          return;
-        } else {
-          mutateFeed();
-          router.push("/home/" + postId);
-        }
-      } catch (error) {
-        return;
+    try {
+      const res = await fetch("/api/posts/" + postId, {
+        method: "PUT",
+        body: JSON.stringify(editedPost),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message);
       }
+
+      mutateFeed();
+      mutatePost();
+      router.push("/home/" + postId);
+    } catch (error) {
+      return console.log(error);
     }
   };
 
   useEffect(() => {
     if (post) {
-      if (userId !== post.userId) {
+      if (!post.isOwner) {
         router.push("/home");
       }
 
       setEditedPost({
         title: post.title,
         description: post.description,
-        link: post.link,
+        url: post.url,
       });
     }
   }, [post]);
 
-  if (error || isLoading) return null;
+  if (isError || isLoading) return null;
 
   return (
     <>
-      {userId === post.userId && (
+      {status === "authenticated" && post.isOwner && (
         <form
           onSubmit={handleSubmit}
           className="flex w-full flex-col gap-4 rounded-md bg-neutral-700 p-4"
@@ -140,7 +118,7 @@ export default function Form({ postId }: { postId: string }) {
               value={editedPost.title}
               onChange={handleChange}
             />
-            {postError.title && (
+            {editedError.title && (
               <p className="text-xs text-rose-600">Please enter post title </p>
             )}
           </div>
@@ -154,7 +132,7 @@ export default function Form({ postId }: { postId: string }) {
               value={editedPost.description}
               onChange={handleChange}
             ></textarea>
-            {postError.description && (
+            {editedError.description && (
               <p className="text-xs text-rose-600">
                 Please enter post description
               </p>
@@ -163,13 +141,13 @@ export default function Form({ postId }: { postId: string }) {
           <div className="flex flex-col gap-1">
             <input
               type="text"
-              name="link"
+              name="url"
               placeholder="Media url"
               className="rounded-md bg-inherit bg-neutral-800 p-2 outline-none"
-              value={editedPost.link}
+              value={editedPost.url}
               onChange={handleChange}
             />
-            {postError.link && (
+            {editedError.url && (
               <p className="text-xs text-rose-600">Invalid media url</p>
             )}
           </div>

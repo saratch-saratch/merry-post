@@ -4,7 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 
 export async function DELETE(
-  request: Request,
+  req: Request,
   { params }: { params: { commentId: string } }
 ) {
   const session = await getServerSession(authOptions);
@@ -18,6 +18,16 @@ export async function DELETE(
     }
 
     const userId = session.user.id;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const comment = await prisma.comment.findUnique({
       where: {
         id: params.commentId,

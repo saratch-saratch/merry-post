@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, FormEvent, ChangeEvent, useEffect } from "react";
-import { mutateFeed } from "@/app/home/Feed";
+import { useFeed } from "@/utils/useFeed";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { signOut } from "next-auth/react";
@@ -24,6 +24,7 @@ export default function Content() {
 
   const router = useRouter();
   const { status } = useSession();
+  const { mutateFeed } = useFeed();
 
   const [editedUser, setEditedUser] = useState({
     displayName: "",
@@ -73,13 +74,10 @@ export default function Content() {
     }
 
     try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/users/user",
-        {
-          method: "PUT",
-          body: JSON.stringify(editedUser),
-        }
-      );
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/users/user", {
+        method: "PUT",
+        body: JSON.stringify(editedUser),
+      });
 
       setEditedUser((editedUser) => ({
         ...editedUser,
@@ -87,7 +85,7 @@ export default function Content() {
         newPassword: "",
       }));
 
-      if (response.ok) {
+      if (res.ok) {
         setSubmitStatus("ok");
         mutateUser();
         mutateFeed();
@@ -98,12 +96,6 @@ export default function Content() {
       setSubmitStatus("submitError");
     }
   };
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/signin");
-    }
-  }, [status]);
 
   useEffect(() => {
     if (user) {

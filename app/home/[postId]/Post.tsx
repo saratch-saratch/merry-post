@@ -7,21 +7,22 @@ import DeletePost from "./DeletePost";
 import Metadata from "./Metadata";
 
 interface PostProps {
-  postId: string;
   post: {
+    id: string;
     title: string;
     description: string;
-    link: string;
+    url: string;
     createdAt: string;
     lastModified: string;
     user: string;
     color: string;
     userId: string;
+    isOwner: boolean;
   };
-  userId: string;
+  status: string;
 }
 
-export default function Post({ postId, post, userId }: PostProps) {
+export default function Post({ post, status }: PostProps) {
   const date = moment(post.createdAt).fromNow();
   const modifiedDate = moment(post.lastModified).fromNow();
 
@@ -39,7 +40,7 @@ export default function Post({ postId, post, userId }: PostProps) {
               {post.user}
             </p>
             <p>{post.description}</p>
-            {post.link.length > 0 && <Metadata link={post.link} />}
+            {post.url.length > 0 && <Metadata url={post.url} />}
             <div>
               <p className="text-end text-xs">{date}</p>
               {post.lastModified && (
@@ -51,12 +52,12 @@ export default function Post({ postId, post, userId }: PostProps) {
           </div>
         </div>
       </div>
-      {userId === post.userId && (
+      {post.isOwner && (
         <div className="invisible flex flex-col gap-1 group-hover:visible">
-          <Link href={"/home/" + postId + "/edit"}>
+          <Link href={"/home/" + post.id + "/edit"}>
             <RiEdit2Fill className="h-6 w-6 fill-neutral-500 hover:fill-white" />
           </Link>
-          <DeletePost userId={userId} postUserId={post.userId} />
+          <DeletePost postId={post.id} isOwner={post.isOwner} status={status} />
         </div>
       )}
     </section>

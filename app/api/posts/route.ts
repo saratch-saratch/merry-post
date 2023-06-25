@@ -3,15 +3,11 @@ import prisma from "@/prisma/prisma";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 
-//here
-//check again
-
-export async function GET(request: Request) {
+export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
-  const userId = session?.user.id;
 
   try {
-    if (!userId) {
+    if (!session) {
       return NextResponse.json(
         { error: "You are not logged in" },
         { status: 401 }
@@ -29,12 +25,16 @@ export async function GET(request: Request) {
       },
     });
 
+    if (!posts) {
+      return NextResponse.json({ error: "Posts not found" }, { status: 404 });
+    }
+
     const filteredPosts = posts.map((post) => {
       return {
         id: post.id,
         title: post.title,
         description: post.description,
-        link: post.link,
+        url: post.url,
         createdAt: post.createdAt,
         user: post.user.displayName,
         color: post.user.job.color,
@@ -47,11 +47,10 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  const body = await request.json();
-  const { title, description, link } = body;
-  let validatedUrl = "";
+  const body = await req.json();
+  const { title, description, url } = body;
 
   try {
     if (!session) {
@@ -62,6 +61,16 @@ export async function POST(request: Request) {
     }
 
     const userId = session.user.id;
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User does not exist" },
+        { status: 404 }
+      );
+    }
 
     if (!title || !description || title === "" || description === "") {
       return NextResponse.json(
@@ -70,22 +79,30 @@ export async function POST(request: Request) {
       );
     }
 
-    if (link) {
-      const url = new URL(link);
-      if (!url.hostname.includes("youtube.com")) {
+    let validatedUrl = "";
+    if (url && url !== "") {
+      try {
+        const newUrl = new URL(url);
+        if (!newUrl.hostname.includes("youtube.com")) {
+          return NextResponse.json(
+            { error: "Url is not valid" },
+            { status: 400 }
+          );
+        }
+        validatedUrl = url;
+      } catch (err) {
         return NextResponse.json(
-          { error: "Link is not a valid url" },
+          { error: "Url is not valid" },
           { status: 400 }
         );
       }
-      validatedUrl = link;
     }
 
     const post = await prisma.post.create({
       data: {
         title,
         description,
-        link: validatedUrl,
+        url: validatedUrl,
         user: { connect: { id: userId } },
       },
     });

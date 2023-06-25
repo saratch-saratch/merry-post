@@ -32,7 +32,7 @@ model Post {
   userId      String
   title       String
   description String
-  link        String      @default("")
+  url         String      @default("")
   createdAt   DateTime    @default(now())
   lastModified    DateTime?
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)

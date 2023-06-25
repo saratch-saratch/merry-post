@@ -27,6 +27,9 @@ export const authOptions: NextAuthOptions = {
     signIn: "/signin",
     signOut: "/home/settings",
   },
+  session: {
+    maxAge: 60 * 60 * 24, // 24 hours
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -34,7 +37,7 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token, user }) {
       if (session) {
         session.user.id = token.id as string;
       }

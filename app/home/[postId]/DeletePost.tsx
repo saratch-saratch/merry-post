@@ -1,33 +1,41 @@
 "use client";
 
 import { RiDeleteBinFill } from "react-icons/ri";
-import { useParams, useRouter } from "next/navigation";
-import { mutateFeed } from "../Feed";
+import { useRouter } from "next/navigation";
+import { useFeed } from "@/utils/useFeed";
 
 interface DeletePostProps {
-  userId: string;
-  postUserId: string;
+  postId: string;
+  isOwner: boolean;
+  status: string;
 }
 
-export default function DeletePost({ userId, postUserId }: DeletePostProps) {
-  const { postId } = useParams();
+export default function DeletePost({
+  postId,
+  isOwner,
+  status,
+}: DeletePostProps) {
   const router = useRouter();
+  const { mutateFeed } = useFeed();
 
   const deletePost = async () => {
-    if (userId !== postUserId) return;
-
     try {
-      const response = await fetch(
+      if (status !== "authenticated" || !isOwner) return;
+
+      const res = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/posts/" + postId,
         { method: "DELETE" }
       );
-      if (!response.ok) {
-        return;
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message);
       }
+
       mutateFeed();
       router.push("/home");
     } catch (error) {
-      return;
+      return console.log(error);
     }
   };
 

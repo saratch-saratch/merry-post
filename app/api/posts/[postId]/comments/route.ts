@@ -4,7 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 
 export async function GET(
-  request: Request,
+  req: Request,
   { params }: { params: { postId: string } }
 ) {
   try {
@@ -18,6 +18,26 @@ export async function GET(
     }
 
     const userId = session.user.id;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: params.postId,
+      },
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
     const comments = await prisma.comment.findMany({
       where: {
         postId: params.postId,
@@ -31,6 +51,13 @@ export async function GET(
         },
       },
     });
+
+    if (!comments) {
+      return NextResponse.json(
+        { error: "Comments not found" },
+        { status: 404 }
+      );
+    }
 
     const filteredComments = comments.map((comment) => {
       return {
@@ -51,7 +78,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  req: Request,
   { params }: { params: { postId: string } }
 ) {
   const session = await getServerSession(authOptions);
@@ -65,7 +92,36 @@ export async function POST(
     }
 
     const userId = session.user.id;
-    const body = await request.json();
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    //check if post exists
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: params.postId,
+      },
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    const body = await req.json();
+
+    if (!body.message || body.message.trim() === "") {
+      return NextResponse.json(
+        { error: "Message cannot be empty" },
+        { status: 400 }
+      );
+    }
 
     const comment = await prisma.comment.create({
       data: {

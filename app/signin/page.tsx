@@ -26,17 +26,19 @@ export default function SignIn() {
     }
 
     {
-      const response = await signIn("credentials", {
+      const res = await signIn("credentials", {
         ...user,
         redirect: false,
       });
-      if (response?.error) setError("submit");
+      if (res?.error) setError("submit");
       else router.push("/home");
     }
   };
 
   useEffect(() => {
-    if (status === "authenticated") router.push("/home");
+    if (status === "authenticated") {
+      router.push("/home");
+    }
   }, [status]);
 
   return (

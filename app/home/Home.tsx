@@ -42,7 +42,7 @@ export default async function Home() {
             <RiChat3Line className="h-6 w-6 fill-amber-200 group-hover:fill-black" />
           </Link>
         </div>
-        <div className=" h-1 w-full rounded-lg bg-gradient-to-r from-amber-200 via-neutral-700 to-neutral-800" />
+        <div className=" h-1 w-full shrink-0 rounded-lg bg-gradient-to-r from-amber-200 via-neutral-700 to-neutral-800" />
         <Feed />
       </section>
     </section>

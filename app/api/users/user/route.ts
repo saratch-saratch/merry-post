@@ -1,9 +1,9 @@
 import prisma from "@/prisma/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(req: Request) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -52,8 +52,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
-    const data = await request.json();
+    const data = await req.json();
     const { displayName, jobId, email, newPassword, password } = data;
 
     if (!displayName || !jobId || !email || !newPassword || !password) {
@@ -81,6 +80,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const userId = session.user.id;
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
