@@ -22,11 +22,11 @@ export default function DeletePost({
     try {
       if (status !== "authenticated" || !isOwner) return;
 
-      const response = await fetch(
+      const res = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/posts/" + postId,
         { method: "DELETE" }
       );
-      if (!response.ok) {
+      if (!res.ok) {
         return;
       }
       mutateFeed();

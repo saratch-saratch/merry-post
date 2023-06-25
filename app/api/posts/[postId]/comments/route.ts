@@ -4,7 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 
 export async function GET(
-  request: Request,
+  req: Request,
   { params }: { params: { postId: string } }
 ) {
   try {
@@ -42,6 +42,13 @@ export async function GET(
       },
     });
 
+    if (!comments) {
+      return NextResponse.json(
+        { error: "Comments not found" },
+        { status: 404 }
+      );
+    }
+
     const filteredComments = comments.map((comment) => {
       return {
         id: comment.id,
@@ -61,7 +68,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  req: Request,
   { params }: { params: { postId: string } }
 ) {
   const session = await getServerSession(authOptions);
@@ -85,7 +92,7 @@ export async function POST(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const body = await request.json();
+    const body = await req.json();
     const comment = await prisma.comment.create({
       data: {
         message: body.message,

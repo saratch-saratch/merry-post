@@ -20,8 +20,7 @@ export default function PostPage({ params }: { params: { postId: string } }) {
   } = useSWR("/api/posts/" + postId, fetcher);
 
   const router = useRouter();
-  const { data: session, status } = useSession();
-  const userId = session?.user.id as string;
+  const { status } = useSession();
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/signin");

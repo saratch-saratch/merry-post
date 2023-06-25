@@ -27,11 +27,11 @@ export default function Comments({
     try {
       if (status !== "authenticated" || !isOwner) return;
 
-      const response = await fetch(
+      const res = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/comments/" + commentId,
         { method: "DELETE" }
       );
-      if (!response.ok) return;
+      if (!res.ok) return;
 
       mutateComments();
     } catch (error) {

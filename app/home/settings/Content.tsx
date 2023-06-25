@@ -74,13 +74,10 @@ export default function Content() {
     }
 
     try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/users/user",
-        {
-          method: "PUT",
-          body: JSON.stringify(editedUser),
-        }
-      );
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/users/user", {
+        method: "PUT",
+        body: JSON.stringify(editedUser),
+      });
 
       setEditedUser((editedUser) => ({
         ...editedUser,
@@ -88,7 +85,7 @@ export default function Content() {
         newPassword: "",
       }));
 
-      if (response.ok) {
+      if (res.ok) {
         setSubmitStatus("ok");
         mutateUser();
         mutateFeed();

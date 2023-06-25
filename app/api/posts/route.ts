@@ -3,7 +3,7 @@ import prisma from "@/prisma/prisma";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 
-export async function GET(request: Request) {
+export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
 
   try {
@@ -25,6 +25,10 @@ export async function GET(request: Request) {
       },
     });
 
+    if (!posts) {
+      return NextResponse.json({ error: "Posts not found" }, { status: 404 });
+    }
+
     const filteredPosts = posts.map((post) => {
       return {
         id: post.id,
@@ -43,9 +47,9 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  const body = await request.json();
+  const body = await req.json();
   const { title, description, url } = body;
 
   try {

@@ -62,12 +62,12 @@ export default function Form() {
     if (status === "unauthenticated" || !validatePost()) return;
 
     try {
-      const response = await fetch("/api/posts", {
+      const res = await fetch("/api/posts", {
         method: "POST",
         body: JSON.stringify(post),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!res.ok) {
+        const errorData = await res.json();
         throw new Error(errorData.message);
       } else {
         mutateFeed();

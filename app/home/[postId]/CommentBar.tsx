@@ -18,7 +18,7 @@ export default function CommentBar({
 
     if (status === "authenticated" && message !== "") {
       try {
-        const response = await fetch(
+        const res = await fetch(
           process.env.NEXT_PUBLIC_API_URL + "/posts/" + postId + "/comments",
           {
             method: "POST",
@@ -26,7 +26,7 @@ export default function CommentBar({
           }
         );
         setMessage("");
-        if (!response.ok) return;
+        if (!res.ok) return;
         mutateComments();
       } catch (error) {
         setMessage("");

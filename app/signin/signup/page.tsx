@@ -68,12 +68,12 @@ export default function SignUp() {
     if (!validateUser()) return;
 
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/users", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/users", {
         method: "POST",
         body: JSON.stringify(user),
       });
 
-      if (response.ok) {
+      if (res.ok) {
         setSubmitStatus("ok");
         setTimeout(() => router.push("/signin"), 2000);
       } else setSubmitStatus("error");
@@ -147,7 +147,7 @@ export default function SignUp() {
                   className="h-6 w-full flex-shrink bg-stone-50 px-4 text-neutral-900 outline-none"
                 >
                   <option value="">Choose your job</option>
-                  {jobs?.map((job: { id: number; jobName: string }) => (
+                  {jobs.map((job: { id: number; jobName: string }) => (
                     <option key={job.id} value={job.id}>
                       {job.jobName}
                     </option>

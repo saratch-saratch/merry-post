@@ -26,12 +26,11 @@ export default function SignIn() {
     }
 
     {
-      const response = await signIn("credentials", {
+      const res = await signIn("credentials", {
         ...user,
         redirect: false,
       });
-      console.log(response);
-      if (response?.error) setError("submit");
+      if (res?.error) setError("submit");
       else router.push("/home");
     }
   };

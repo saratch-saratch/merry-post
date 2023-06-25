@@ -3,17 +3,34 @@ import prisma from "@/prisma/prisma";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 
-//here
-
 export async function GET(
-  request: Request,
+  req: Request,
   { params }: { params: { postId: string } }
 ) {
   try {
-    const postId = params.postId;
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json(
+        { error: "You are not logged in" },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const post = await prisma.post.findUnique({
       where: {
-        id: postId,
+        id: params.postId,
       },
       include: {
         user: {
@@ -25,10 +42,15 @@ export async function GET(
       },
     });
 
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
     const filteredPost = {
       ...post,
-      user: post?.user.displayName,
-      color: post?.user.job.color,
+      user: post.user.displayName,
+      color: post.user.job.color,
+      isOwner: post.userId === userId,
     };
 
     return NextResponse.json(filteredPost, { status: 200 });
@@ -40,10 +62,10 @@ export async function GET(
 //here
 
 export async function PUT(
-  request: Request,
+  req: Request,
   { params }: { params: { postId: string } }
 ) {
-  const body = await request.json();
+  const body = await req.json();
   const { title, description, url } = body;
   let checkedLink = "";
   try {
@@ -84,7 +106,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
+  req: Request,
   { params }: { params: { postId: string } }
 ) {
   const session = await getServerSession(authOptions);
@@ -108,29 +130,29 @@ export async function DELETE(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const comment = await prisma.comment.findUnique({
+    const post = await prisma.post.findUnique({
       where: {
         id: params.postId,
       },
     });
 
-    if (!comment) {
+    if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    if (comment.userId !== userId) {
+    if (post.userId !== userId) {
       return NextResponse.json(
         { error: "You are not authorized to delete this post" },
         { status: 403 }
       );
     }
 
-    const post = await prisma.post.delete({
+    const deletedPost = await prisma.post.delete({
       where: {
         id: params.postId,
       },
     });
-    return NextResponse.json(post, { status: 200 });
+    return NextResponse.json(deletedPost, { status: 200 });
   } catch (err) {
     return NextResponse.json({ error: "Failed to load data" }, { status: 500 });
   }

@@ -90,14 +90,14 @@ export default function Form({ postId }: { postId: string }) {
       !newError.url
     ) {
       try {
-        const response = await fetch("/api/posts/" + postId, {
+        const res = await fetch("/api/posts/" + postId, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(newEditedPost),
         });
-        if (!response.ok) {
+        if (!res.ok) {
           return;
         } else {
           mutateFeed();
