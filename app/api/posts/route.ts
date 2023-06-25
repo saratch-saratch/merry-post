@@ -57,7 +57,6 @@ export async function POST(request: Request) {
     }
 
     const userId = session.user.id;
-
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });

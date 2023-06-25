@@ -18,6 +18,16 @@ export async function GET(
     }
 
     const userId = session.user.id;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const comments = await prisma.comment.findMany({
       where: {
         postId: params.postId,
@@ -65,8 +75,17 @@ export async function POST(
     }
 
     const userId = session.user.id;
-    const body = await request.json();
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
 
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const body = await request.json();
     const comment = await prisma.comment.create({
       data: {
         message: body.message,

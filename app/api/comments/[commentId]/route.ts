@@ -18,6 +18,16 @@ export async function DELETE(
     }
 
     const userId = session.user.id;
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const comment = await prisma.comment.findUnique({
       where: {
         id: params.commentId,

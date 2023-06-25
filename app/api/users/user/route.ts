@@ -52,7 +52,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
     const data = await request.json();
     const { displayName, jobId, email, newPassword, password } = data;
 
@@ -81,6 +80,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const userId = session.user.id;
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
