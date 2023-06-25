@@ -7,8 +7,6 @@ import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { useSession } from "next-auth/react";
 
-//here
-
 export default function Form({ postId }: { postId: string }) {
   const {
     data: post,
@@ -17,16 +15,15 @@ export default function Form({ postId }: { postId: string }) {
   } = useSWR("/api/posts/" + postId, fetcher);
 
   const { mutateFeed } = useFeed();
-  const { data: session } = useSession();
-  const userId = session?.user.id;
-
+  const { status } = useSession();
   const router = useRouter();
+
   const [editedPost, setEditedPost] = useState({
     title: "",
     description: "",
     url: "",
   });
-  const [postError, setPostError] = useState({
+  const [editedError, setEditedError] = useState({
     title: false,
     description: false,
     url: false,
@@ -39,79 +36,73 @@ export default function Form({ postId }: { postId: string }) {
     setEditedPost((post) => ({ ...post, [name]: value }));
   };
 
-  const validatePost = (
-    newEditedPost: {
-      title: string;
-      description: string;
-      url: string;
-    },
-    newError: {
-      title: boolean;
-      description: boolean;
-      url: boolean;
-    }
-  ) => {
-    if (newEditedPost.title === "") {
-      newError.title = true;
-    } else {
-      newError.title = false;
-    }
+  const validatePost = () => {
+    let isValid = true;
+    let isUrlValid = true;
 
-    if (newEditedPost.description === "") {
-      newError.description = true;
-    } else {
-      newError.description = false;
-    }
-
-    if (newEditedPost.url !== "") {
+    if (post.url !== "") {
       try {
         const url = new URL(post.url);
+
         if (url.hostname !== "www.youtube.com") {
-          newEditedPost.url = "";
+          isUrlValid = true;
+        } else {
+          isUrlValid = false;
         }
       } catch (error) {
-        newEditedPost.url = "";
+        isUrlValid = false;
       }
     }
+
+    const validatedUserError = {
+      title: post.title.trim() === "",
+      description: post.description.trim() === "",
+      url: !isUrlValid,
+    };
+
+    for (const key in validatedUserError) {
+      if (validatedUserError[key as keyof typeof validatedUserError]) {
+        isValid = false;
+        break;
+      }
+    }
+
+    setEditedError(validatedUserError);
+    return isValid;
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    let newEditedPost = { ...editedPost };
-    let newError = { ...postError };
+    if (status === "unauthenticated" || !post.isOwner || !validatePost())
+      return;
 
-    validatePost(newEditedPost, newError);
-    setPostError(newError);
-    setEditedPost(newEditedPost);
-    if (
-      userId === post.userId &&
-      !newError.title &&
-      !newError.description &&
-      !newError.url
-    ) {
-      try {
-        const res = await fetch("/api/posts/" + postId, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newEditedPost),
-        });
-        if (!res.ok) {
-          return;
-        } else {
-          mutateFeed();
-          router.push("/home/" + postId);
-        }
-      } catch (error) {
-        return;
+    try {
+      const res = await fetch("/api/posts/" + postId, {
+        method: "PUT",
+        body: JSON.stringify(editedPost),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message);
       }
+
+      mutateFeed();
+      router.push("/home/" + postId);
+    } catch (error) {
+      return console.log(error);
     }
   };
 
   useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/signin");
+    }
+  }, [status]);
+
+  useEffect(() => {
     if (post) {
-      if (userId !== post.userId) {
+      if (!post.isOwner) {
         router.push("/home");
       }
 
@@ -127,7 +118,7 @@ export default function Form({ postId }: { postId: string }) {
 
   return (
     <>
-      {userId === post.userId && (
+      {status === "authenticated" && post.isOwner && (
         <form
           onSubmit={handleSubmit}
           className="flex w-full flex-col gap-4 rounded-md bg-neutral-700 p-4"
@@ -141,7 +132,7 @@ export default function Form({ postId }: { postId: string }) {
               value={editedPost.title}
               onChange={handleChange}
             />
-            {postError.title && (
+            {editedError.title && (
               <p className="text-xs text-rose-600">Please enter post title </p>
             )}
           </div>
@@ -155,7 +146,7 @@ export default function Form({ postId }: { postId: string }) {
               value={editedPost.description}
               onChange={handleChange}
             ></textarea>
-            {postError.description && (
+            {editedError.description && (
               <p className="text-xs text-rose-600">
                 Please enter post description
               </p>
@@ -170,7 +161,7 @@ export default function Form({ postId }: { postId: string }) {
               value={editedPost.url}
               onChange={handleChange}
             />
-            {postError.url && (
+            {editedError.url && (
               <p className="text-xs text-rose-600">Invalid media url</p>
             )}
           </div>

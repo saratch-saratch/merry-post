@@ -9,6 +9,7 @@ export default function Form() {
   const router = useRouter();
   const { status } = useSession();
   const { mutateFeed } = useFeed();
+
   const [post, setPost] = useState({ title: "", description: "", url: "" });
   const [error, setError] = useState({
     title: false,
@@ -25,11 +26,12 @@ export default function Form() {
 
   const validatePost = () => {
     let isValid = true;
-
     let isUrlValid = true;
+
     if (post.url !== "") {
       try {
         const url = new URL(post.url);
+
         if (url.hostname !== "www.youtube.com") {
           isUrlValid = true;
         } else {
@@ -66,15 +68,16 @@ export default function Form() {
         method: "POST",
         body: JSON.stringify(post),
       });
+
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.message);
-      } else {
-        mutateFeed();
-        router.push("/home");
       }
+
+      mutateFeed();
+      router.push("/home");
     } catch (error) {
-      console.log(error);
+      return console.log(error);
     }
   };
 

@@ -28,6 +28,16 @@ export async function GET(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    const post = await prisma.post.findUnique({
+      where: {
+        id: params.postId,
+      },
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
     const comments = await prisma.comment.findMany({
       where: {
         postId: params.postId,
@@ -92,7 +102,27 @@ export async function POST(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    //check if post exists
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: params.postId,
+      },
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
     const body = await req.json();
+
+    if (!body.message || body.message.trim() === "") {
+      return NextResponse.json(
+        { error: "Message cannot be empty" },
+        { status: 400 }
+      );
+    }
+
     const comment = await prisma.comment.create({
       data: {
         message: body.message,

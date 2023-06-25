@@ -26,13 +26,16 @@ export default function DeletePost({
         process.env.NEXT_PUBLIC_API_URL + "/posts/" + postId,
         { method: "DELETE" }
       );
+
       if (!res.ok) {
-        return;
+        const errorData = await res.json();
+        throw new Error(errorData.message);
       }
+
       mutateFeed();
       router.push("/home");
     } catch (error) {
-      return;
+      return console.log(error);
     }
   };
 

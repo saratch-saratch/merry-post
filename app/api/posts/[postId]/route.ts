@@ -78,6 +78,7 @@ export async function PUT(
 
     if (url !== "") {
       const validatedUrl = new URL(url);
+
       if (!validatedUrl.hostname.includes("youtube.com")) {
         return NextResponse.json(
           { error: "Link is not a valid url" },
@@ -109,9 +110,9 @@ export async function DELETE(
   req: Request,
   { params }: { params: { postId: string } }
 ) {
-  const session = await getServerSession(authOptions);
-
   try {
+    const session = await getServerSession(authOptions);
+
     if (!session) {
       return NextResponse.json(
         { error: "You are not logged in" },

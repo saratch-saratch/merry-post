@@ -26,10 +26,15 @@ export default function CommentBar({
           }
         );
         setMessage("");
-        if (!res.ok) return;
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message);
+        }
+
         mutateComments();
       } catch (error) {
-        setMessage("");
+        return console.log(error);
       }
     }
   };

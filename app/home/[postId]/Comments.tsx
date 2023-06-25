@@ -31,11 +31,15 @@ export default function Comments({
         process.env.NEXT_PUBLIC_API_URL + "/comments/" + commentId,
         { method: "DELETE" }
       );
-      if (!res.ok) return;
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message);
+      }
 
       mutateComments();
     } catch (error) {
-      return;
+      return console.log(error);
     }
   };
 
