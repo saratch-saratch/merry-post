@@ -18,7 +18,7 @@ export default async function Home() {
             <RiUser3Fill className="h-6 w-6 -rotate-12 fill-amber-200 group-hover:fill-rose-600" />
           </Link>
           <div className="flex w-full justify-center">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/home" className="flex items-center gap-2">
               <h1 className="font-vt323 text-2xl">Merry Post</h1>
               <RiSwordFill className="h-6 w-6 rotate-12" />
             </Link>

@@ -75,7 +75,7 @@ export default function Feed() {
                         src={thumbnails[post.url]}
                         className="aspect-video h-20 flex-shrink-0 self-center rounded-md object-cover"
                         alt="Thumbnail"
-                      ></img>
+                      />
                     )}
                   </div>
                   <div className="flex">

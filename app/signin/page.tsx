@@ -44,7 +44,7 @@ export default function SignIn() {
   return (
     <>
       {status === "unauthenticated" && (
-        <section className="relative flex h-full flex-col items-center justify-between p-4 text-neutral-900">
+        <section className="relative flex h-full flex-col items-center justify-between gap-4 p-4 text-neutral-900">
           <div className="flex items-center gap-2">
             <h1 className="text-center font-vt323 text-3xl text-inherit">
               Merry Post

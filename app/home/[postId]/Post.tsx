@@ -34,7 +34,7 @@ export default function Post({ post, status }: PostProps) {
           <div
             style={{ backgroundColor: post.color }}
             className="h-8 w-8 flex-shrink-0 rounded-full"
-          ></div>
+          />
           <div className="flex w-full flex-col justify-between gap-4">
             <p style={{ color: post.color }} className="font-bold">
               {post.user}

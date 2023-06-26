@@ -95,7 +95,7 @@ export default function SignUp() {
         <section className="relative h-full p-4 text-neutral-900">
           <form
             onSubmit={handleSubmit}
-            className="flex h-full flex-col items-center justify-between"
+            className="flex h-full flex-col items-center justify-between gap-4"
           >
             {/* username and email */}
             <div className="flex gap-4">

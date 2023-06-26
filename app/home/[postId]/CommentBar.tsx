@@ -51,7 +51,7 @@ export default function CommentBar({
         className="w-full rounded-md bg-neutral-800 px-4 outline-none"
         value={message}
         onChange={(event) => setMessage(event.target.value)}
-      ></input>
+      />
     </form>
   );
 }
