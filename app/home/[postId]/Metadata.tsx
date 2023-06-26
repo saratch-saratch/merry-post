@@ -47,7 +47,7 @@ export default function Metadata({ url }: { url: string }) {
           src={youtubeMeta?.thumbnail}
           alt=""
           className="aspect-video h-full w-full rounded-md object-cover"
-        ></img>
+        />
       </div>
     </Link>
   );

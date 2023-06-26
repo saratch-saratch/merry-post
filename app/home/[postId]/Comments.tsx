@@ -56,7 +56,7 @@ export default function Comments({
             <div
               style={{ backgroundColor: comment.color }}
               className="h-6 w-6 flex-shrink-0 rounded-full"
-            ></div>
+            />
             <div className="flex w-full flex-col justify-between gap-2">
               <div>
                 <p style={{ color: comment.color }} className="font-bold">

@@ -107,7 +107,7 @@ export default function Form() {
               className="resize-none bg-inherit outline-none"
               value={post.description}
               onChange={handleChange}
-            ></textarea>
+            />
             {error.description && (
               <p className="text-xs text-rose-600">
                 Please enter post description

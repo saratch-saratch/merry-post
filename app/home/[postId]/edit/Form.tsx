@@ -131,7 +131,7 @@ export default function Form({ postId }: { postId: string }) {
               className="resize-none bg-inherit outline-none"
               value={editedPost.description}
               onChange={handleChange}
-            ></textarea>
+            />
             {editedError.description && (
               <p className="text-xs text-rose-600">
                 Please enter post description
