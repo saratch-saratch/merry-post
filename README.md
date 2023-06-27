@@ -76,3 +76,4 @@ This application was made with JWT authentication for both client-side and serve
   - `npx prisma migrate dev`
   - `npx prisma generate`
   - `npx prisma db seed`
+- Run `npm run dev` to start the application locally.
