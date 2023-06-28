@@ -152,7 +152,7 @@ export default function Form({ postId }: { postId: string }) {
             )}
           </div>
           <button className="flex h-12 w-1/4 items-center justify-center gap-1 self-end rounded-3xl bg-rose-600 font-semibold text-amber-200 hover:bg-rose-500 hover:text-black">
-            Post
+            Edit
           </button>
         </form>
       )}
