@@ -26,6 +26,15 @@ export default function Post({ post, status }: PostProps) {
   const date = moment(post.createdAt).fromNow();
   const modifiedDate = moment(post.lastModified).fromNow();
 
+  const formattedDescription = post.description.split("\n").map((item, key) => {
+    return (
+      <span key={key}>
+        {item}
+        <br />
+      </span>
+    );
+  });
+
   return (
     <section className="group flex w-full gap-2 rounded-md bg-gradient-to-bl from-neutral-700 via-neutral-800 to-neutral-800 px-4 py-2 hover:via-neutral-700 hover:to-neutral-700">
       <div className="flex w-full flex-col gap-4">
@@ -39,7 +48,7 @@ export default function Post({ post, status }: PostProps) {
             <p style={{ color: post.color }} className="font-bold">
               {post.user}
             </p>
-            <p>{post.description}</p>
+            <p>{formattedDescription}</p>
             {post.url.length > 0 && <Metadata url={post.url} />}
             <div>
               <p className="text-end text-xs">{date}</p>
